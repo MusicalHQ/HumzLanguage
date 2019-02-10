@@ -1,0 +1,11 @@
+fnc add a b c d e f {
+
+cpy a b dir -2
+cpy c d e f
+unt dir -2
+inc dir -2 int -1
+inc e f int 1
+end_unt
+
+}
+
