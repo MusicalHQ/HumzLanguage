@@ -3,6 +3,7 @@
 
 import BFExtendedHumza as BF
 import copy
+import sys
 
 possible_commands = [['jmp',2],['out',3],['set',4],['unt',2],['inc',4],['end_unt',0],['cpy',4],['mve',4],['fwd',0],['bck',0],['plu',0],['bck',0],['loo',0],['end_loo',0],['out_now',1],['inp',2]]
 
@@ -280,8 +281,37 @@ class compiler:
             else:
                 func_to_call()
 
-file = parse('test.hl',possible_commands)
-compiler = compiler(possible_commands)
-compiler.compile_code(file.parsed)
-#print(len(compiler.bf_out))
-BF.run(compiler.bf_out,True)
+if __name__ == "__main__":       
+    try:
+        args = sys.argv[:]
+        args.pop(0)
+        file = args.pop(0)
+        run = False
+        out = False
+        debug = False
+        name = 'output.hl'
+        for i in args:
+            if i == '-r':
+                run = True
+            elif i == '-o':
+                out = True
+            elif i[1] == 'n':
+                name = i[3:]
+            elif i == '-d':
+                debug = True
+        with open(file,'r') as brain_file:
+            brain = brain_file.read()  
+        file = parse(file,possible_commands)
+        compiler = compiler(possible_commands)
+        compiler.compile_code(file.parsed)
+        if out:
+            file_object  = open(name, 'w')
+            file_object.write(compiler.bf_out)
+            file_object.close()
+            
+        if run:
+            BF.run(compiler.bf_out,debug)        
+    except:
+        print("No args passed")
+
+    
