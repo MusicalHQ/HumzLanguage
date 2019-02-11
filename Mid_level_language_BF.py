@@ -1,8 +1,6 @@
 #mid_level_language to BFExtended
 
 
-#TO DO - can't have more than 1 func currently - glitches the fuck out.
-
 import BFExtendedHumza as BF
 import copy
 
@@ -13,11 +11,17 @@ class parse:
         self.possible_commands = possible_commands
         self.raw = self.read(file)
         self.raw = self.imports(self.raw)
+        #print(self.raw)
         self.functions = self.get_functions(self.raw)
         self.raw = self.functions[0]
         self.functions = self.functions[1]
+        
+        #print(self.raw)
         self.parsed = self.parse(self.raw)
+        #print(self.functions)
+        #print(self.parsed)
         self.parsed = self.replace_func(self.parsed)
+        #print(self.parsed)
         
     def read (self,file):
         raw = []
@@ -45,7 +49,9 @@ class parse:
         x = 0
         functions = []
         while x < (len(raw)-1):
+            #print(raw)
             if raw[x] == 'fnc':
+                
                 new_func = []
                 raw.pop(x)
                 no_args = -1
@@ -55,10 +61,14 @@ class parse:
                 raw.pop(x)
                 while not raw[x] == '}':
                     new_func.append(raw.pop(x))
-                raw.pop(x)
+                #print(raw)
+                raw.remove('}')
+                #print(raw)
                 self.possible_commands.append([new_func[0],no_args])
                 functions.append(self.parse(new_func))
+                x = -1
             x += 1
+        #print(functions)
         return [raw,functions]                 
     
     def parse (self,raw_file):
@@ -84,7 +94,7 @@ class parse:
         all_functions = []
         
         i = 0
-        while i < (len(raw)-1):
+        while i < (len(raw)):
             command = raw[i]
             #print(command)
             is_function = False
@@ -118,6 +128,7 @@ class parse:
                 for e in new_function:
                     raw.insert(index,e)
                     index += 1
+            #print(command)
             i += 1
             
         
@@ -269,7 +280,7 @@ class compiler:
             else:
                 func_to_call()
 
-file = parse(str(input("File: ")),possible_commands)
+file = parse('test.hl',possible_commands)
 compiler = compiler(possible_commands)
 compiler.compile_code(file.parsed)
 #print(len(compiler.bf_out))

@@ -9,3 +9,28 @@ end_unt
 
 }
 
+fnc sub a b c d e f {
+
+cpy a b e f
+cpy c d dir -3
+unt dir -3
+inc dir -3 int -1
+inc e f int -1
+end_unt
+
+}
+
+fnc mul a b c d e f {
+
+set e f int 0
+cpy a b dir -4
+unt dir -4
+cpy c d dir -5
+unt dir -5
+inc e f int 1
+inc dir -5 int -1
+end_unt
+inc dir -4 int -1
+end_unt
+
+}
