@@ -1,9 +1,6 @@
 import math.hl
 
-set dir 0 int 12
-set dir 1 int 5
-div dir 0 dir 1 dir 2
-out dir 2 int
+
 
 
 

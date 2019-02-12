@@ -26,6 +26,10 @@ class parse:
         while self.has_func(self.parsed) and counter < self.recursion_limit:
             counter += 1
             self.parsed = self.replace_func(self.parsed)
+        
+        if self.has_func(self.parsed):
+            print("Reached function limit")
+            raise ValueError('Reached function in function limit')
 
         #print(self.parsed)
     
@@ -294,7 +298,7 @@ class compiler:
             else:
                 func_to_call()
 
-editor = True
+editor = False
 
 if __name__ == "__main__":  
     args = sys.argv[:]
@@ -306,6 +310,7 @@ if __name__ == "__main__":
             run = False
             out = False
             debug = False
+            compiled_print = False
             name = 'output.hl'
             for i in args:
                 if i == '-r':
@@ -316,6 +321,8 @@ if __name__ == "__main__":
                     name = i[3:]
                 elif i == '-d':
                     debug = True
+                elif i == '-c':
+                    compiled_print = True
             with open(file,'r') as brain_file:
                 brain = brain_file.read()  
             
@@ -335,6 +342,9 @@ if __name__ == "__main__":
                 file_object.write(compiler.bf_out)
                 file_object.close()
                 
+            if compiled_print:
+                print(compiler.bf_out)
+            
             if run:
                 try:
                     BF.run(compiler.bf_out,debug)
@@ -352,6 +362,7 @@ if __name__ == "__main__":
         try:
             compiler.compile_code(file.parsed)
         except:
+
             raise ValueError('Compiler Error')
         
         try:
