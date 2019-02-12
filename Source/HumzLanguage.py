@@ -1,20 +1,46 @@
 #mid_level_language to BFExtended
 
-import BFExtendedHumza as BF
-import copy
 
-possible_commands = [['jmp',2],['out',3],['set',4],['unt',2],['inc',4],['end_unt',0],['cpy',4],['mve',4],['fwd',0],['bck',0],['plu',0],['bck',0],['loo',0],['end_loo',0],['out_now',1]]
+import BFPlus as BF
+import copy
+import sys
+
+possible_commands = [['jmp',2],['out',3],['set',4],['unt',2],['inc',4],['end_unt',0],['cpy',4],['mve',4],['fwd',0],['bck',0],['plu',0],['loo',0],['end_loo',0],['out_now',1],['inp',2]]
 
 class parse:
-    def __init__(self,file,possible_commands):
+    def __init__(self,file,possible_commands,recursion_limit = 1000):
+        self.recursion_limit = recursion_limit
         self.possible_commands = possible_commands
         self.raw = self.read(file)
+        self.raw = self.imports(self.raw)
+        #print(self.raw)
         self.functions = self.get_functions(self.raw)
         self.raw = self.functions[0]
         self.functions = self.functions[1]
-        self.parsed = self.parse(self.raw)
-        self.parsed = self.replace_func(self.parsed)
         
+        #print(self.raw)
+        self.parsed = self.parse(self.raw)
+        #print(self.functions)
+        #print(self.parsed)
+        counter = 0
+        while self.has_func(self.parsed) and counter < self.recursion_limit:
+            counter += 1
+            self.parsed = self.replace_func(self.parsed)
+        
+        if self.has_func(self.parsed):
+            print("Reached function limit")
+            raise ValueError('Reached function in function limit')
+
+        #print(self.parsed)
+    
+    def has_func(self,parsed):
+        has_func = False
+        for i in parsed:
+            for e in self.functions:
+                if i[0] in e[0]:
+                    has_func = True
+        return has_func
+      
     def read (self,file):
         raw = []
         with open(file,'r') as f:
@@ -22,13 +48,28 @@ class parse:
                 for word in line.split():
                     raw.append(word)
         return raw
+
+    def imports (self,raw_file):
+        raw = raw_file
+        x = 0
+        while x < (len(raw)-1):
+            if raw[x] == 'import':
+                raw.pop(x)
+                file = raw.pop(x)
+                new_raw = self.read(file)
+                raw = new_raw + raw
+            x += 1
+        return raw
+                
     
     def get_functions (self,raw_file):
         raw = raw_file
         x = 0
         functions = []
         while x < (len(raw)-1):
+            #print(raw)
             if raw[x] == 'fnc':
+                
                 new_func = []
                 raw.pop(x)
                 no_args = -1
@@ -38,10 +79,14 @@ class parse:
                 raw.pop(x)
                 while not raw[x] == '}':
                     new_func.append(raw.pop(x))
-                raw.pop(x)
+                #print(raw)
+                raw.remove('}')
+                #print(raw)
                 self.possible_commands.append([new_func[0],no_args])
                 functions.append(self.parse(new_func))
+                x = -1
             x += 1
+        #print(functions)
         return [raw,functions]                 
     
     def parse (self,raw_file):
@@ -67,7 +112,7 @@ class parse:
         all_functions = []
         
         i = 0
-        while i < (len(raw)-1):
+        while i < (len(raw)):
             command = raw[i]
             #print(command)
             is_function = False
@@ -101,6 +146,7 @@ class parse:
                 for e in new_function:
                     raw.insert(index,e)
                     index += 1
+            #print(command)
             i += 1
             
         
@@ -136,6 +182,10 @@ class compiler:
             else:
                 self.bf_out = self.bf_out + 'p'
     
+    def inp (self,args):
+        address_type,location = args[0],args[1]
+        self.jmp([address_type,location])
+        self.bf_out = self.bf_out + ','
             
     def set (self,args,compiler=False):
         address_type,location = args[0],args[1]
@@ -248,8 +298,82 @@ class compiler:
             else:
                 func_to_call()
 
-file = parse('test.hl',possible_commands)
-compiler = compiler(possible_commands)
-compiler.compile_code(file.parsed)
-#print(compiler.bf_out)
-BF.run(compiler.bf_out,True)
+editor = False
+
+if __name__ == "__main__":  
+    args = sys.argv[:]
+    if len(args) > 1:
+        if not editor:
+            
+            args.pop(0)
+            file = args.pop(0)
+            run = False
+            out = False
+            debug = False
+            compiled_print = False
+            name = 'output.hl'
+            for i in args:
+                if i == '-r':
+                    run = True
+                elif i == '-o':
+                    out = True
+                elif i[1] == 'n':
+                    name = i[3:]
+                elif i == '-d':
+                    debug = True
+                elif i == '-c':
+                    compiled_print = True
+            with open(file,'r') as brain_file:
+                brain = brain_file.read()  
+            
+            try:
+                file = parse(file,possible_commands)
+            except:
+                raise ValueError('Parsing error')
+            
+            compiler = compiler(possible_commands)
+            try:
+                compiler.compile_code(file.parsed)
+            except:
+                raise ValueError('Compiler Error')
+            
+            if out:
+                file_object  = open(name, 'w')
+                file_object.write(compiler.bf_out)
+                file_object.close()
+                
+            if compiled_print:
+                print(compiler.bf_out)
+            
+            if run:
+                try:
+                    BF.run(compiler.bf_out,debug)
+                except:
+                    raise ValueError('Run Error')
+    elif editor:
+        file = 'test.hl'
+        try:
+            file = parse(file,possible_commands)
+        except:
+            raise ValueError('Parsing error')
+        
+        compiler = compiler(possible_commands)
+        
+        try:
+            compiler.compile_code(file.parsed)
+        except:
+
+            raise ValueError('Compiler Error')
+        
+        try:
+            BF.run(compiler.bf_out,True)
+        except:
+            raise ValueError('Run Error')
+    
+    else:
+        print("No args passed - see docs for help")
+            
+            
+        
+
+    
