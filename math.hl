@@ -34,3 +34,9 @@ inc dir -4 int -1
 end_unt
 
 }
+
+fnc div a b c d e f {
+
+add a b c d e f
+
+}

@@ -8,7 +8,8 @@ import sys
 possible_commands = [['jmp',2],['out',3],['set',4],['unt',2],['inc',4],['end_unt',0],['cpy',4],['mve',4],['fwd',0],['bck',0],['plu',0],['bck',0],['loo',0],['end_loo',0],['out_now',1],['inp',2]]
 
 class parse:
-    def __init__(self,file,possible_commands):
+    def __init__(self,file,possible_commands,recursion_limit = 1000):
+        self.recursion_limit = recursion_limit
         self.possible_commands = possible_commands
         self.raw = self.read(file)
         self.raw = self.imports(self.raw)
@@ -21,9 +22,21 @@ class parse:
         self.parsed = self.parse(self.raw)
         #print(self.functions)
         #print(self.parsed)
-        self.parsed = self.replace_func(self.parsed)
+        counter = 0
+        while self.has_func(self.parsed) and counter < self.recursion_limit:
+            counter += 1
+            self.parsed = self.replace_func(self.parsed)
+
         #print(self.parsed)
-        
+    
+    def has_func(self,parsed):
+        has_func = False
+        for i in parsed:
+            for e in self.functions:
+                if i[0] in e[0]:
+                    has_func = True
+        return has_func
+      
     def read (self,file):
         raw = []
         with open(file,'r') as f:
@@ -281,37 +294,75 @@ class compiler:
             else:
                 func_to_call()
 
-if __name__ == "__main__":       
-    try:
-        args = sys.argv[:]
-        args.pop(0)
-        file = args.pop(0)
-        run = False
-        out = False
-        debug = False
-        name = 'output.hl'
-        for i in args:
-            if i == '-r':
-                run = True
-            elif i == '-o':
-                out = True
-            elif i[1] == 'n':
-                name = i[3:]
-            elif i == '-d':
-                debug = True
-        with open(file,'r') as brain_file:
-            brain = brain_file.read()  
-        file = parse(file,possible_commands)
-        compiler = compiler(possible_commands)
-        compiler.compile_code(file.parsed)
-        if out:
-            file_object  = open(name, 'w')
-            file_object.write(compiler.bf_out)
-            file_object.close()
+editor = True
+
+if __name__ == "__main__":  
+    args = sys.argv[:]
+    if len(args) > 1:
+        if not editor:
             
-        if run:
-            BF.run(compiler.bf_out,debug)        
-    except:
-        print("No args passed")
+            args.pop(0)
+            file = args.pop(0)
+            run = False
+            out = False
+            debug = False
+            name = 'output.hl'
+            for i in args:
+                if i == '-r':
+                    run = True
+                elif i == '-o':
+                    out = True
+                elif i[1] == 'n':
+                    name = i[3:]
+                elif i == '-d':
+                    debug = True
+            with open(file,'r') as brain_file:
+                brain = brain_file.read()  
+            
+            try:
+                file = parse(file,possible_commands)
+            except:
+                raise ValueError('Parsing error')
+            
+            compiler = compiler(possible_commands)
+            try:
+                compiler.compile_code(file.parsed)
+            except:
+                raise ValueError('Compiler Error')
+            
+            if out:
+                file_object  = open(name, 'w')
+                file_object.write(compiler.bf_out)
+                file_object.close()
+                
+            if run:
+                try:
+                    BF.run(compiler.bf_out,debug)
+                except:
+                    raise ValueError('Run Error')
+    elif editor:
+        file = 'test.hl'
+        try:
+            file = parse(file,possible_commands)
+        except:
+            raise ValueError('Parsing error')
+        
+        compiler = compiler(possible_commands)
+        
+        try:
+            compiler.compile_code(file.parsed)
+        except:
+            raise ValueError('Compiler Error')
+        
+        try:
+            BF.run(compiler.bf_out,True)
+        except:
+            raise ValueError('Run Error')
+    
+    else:
+        print("No args passed - see docs for help")
+            
+            
+        
 
     
