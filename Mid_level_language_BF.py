@@ -13,15 +13,11 @@ class parse:
         self.possible_commands = possible_commands
         self.raw = self.read(file)
         self.raw = self.imports(self.raw)
-        #print(self.raw)
         self.functions = self.get_functions(self.raw)
         self.raw = self.functions[0]
         self.functions = self.functions[1]
         
-        #print(self.raw)
         self.parsed = self.parse(self.raw)
-        #print(self.functions)
-        #print(self.parsed)
         counter = 0
         while self.has_func(self.parsed) and counter < self.recursion_limit:
             counter += 1
@@ -31,8 +27,6 @@ class parse:
             print("Reached function limit")
             raise ValueError('Reached function in function limit')
 
-        #print(self.parsed)
-    
     def has_func(self,parsed):
         has_func = False
         for i in parsed:
@@ -79,14 +73,11 @@ class parse:
                 raw.pop(x)
                 while not raw[x] == '}':
                     new_func.append(raw.pop(x))
-                #print(raw)
                 raw.remove('}')
-                #print(raw)
                 self.possible_commands.append([new_func[0],no_args])
                 functions.append(self.parse(new_func))
                 x = -1
             x += 1
-        #print(functions)
         return [raw,functions]                 
     
     def parse (self,raw_file):
@@ -114,15 +105,13 @@ class parse:
         i = 0
         while i < (len(raw)):
             command = raw[i]
-            #print(command)
             is_function = False
             functions = copy.deepcopy(self.functions)
             for e,function in enumerate(functions):
                 if command[0] in function[0]:
                     is_function = True
                     break
-            
-            #print(self.functions)
+
             if is_function:
                 command_sub = command
                 command_sub.pop(0)
@@ -134,29 +123,17 @@ class parse:
                 
                 sub = dict(zip(function_sub,command_sub))
                 
-                #print(sub)
                 new_function = []
                 for e in function:
                     new_function.append(list(map(sub.get, e, e)))
-                #print(new_function[1])
                 new_function.pop(0)
-                #print(new_function[1])
                 index = i
                 raw.pop(index)
                 for e in new_function:
                     raw.insert(index,e)
                     index += 1
-            #print(command)
             i += 1
             
-        
-        #for i in all_functions:
-        #    index = i[0]
-        #    raw.pop(index)
-        #    for e in i[1]:
-        #        raw.insert(index,e)
-        #        index += 1
-        
         return raw
         
         
