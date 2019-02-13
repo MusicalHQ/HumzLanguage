@@ -1,0 +1,141 @@
+set_hidden_memory 15
+
+set dir -9 int 0
+
+fnc add a b c d e f {
+
+cpy a b dir -2
+cpy c d e f
+unt dir -2
+inc dir -2 int -1
+inc e f int 1
+end_unt
+
+}
+
+fnc sub a b c d e f {
+
+cpy a b e f
+cpy c d dir -3
+unt dir -3
+inc dir -3 int -1
+inc e f int -1
+end_unt
+
+}
+
+fnc mul a b c d e f {
+
+set e f int 0
+cpy a b dir -4
+unt dir -4
+cpy c d dir -5
+unt dir -5
+inc e f int 1
+inc dir -5 int -1
+end_unt
+inc dir -4 int -1
+end_unt
+
+}
+
+fnc div a b c d e f {
+
+set e f int 0
+cpy a b dir -5
+sub dir -5 c d dir -6
+cpy dir -6 dir -5
+inc dir -5 int 1
+unt dir -5
+inc e f int 1
+sub dir -5 c d dir -6
+cpy dir -6 dir -5
+end_unt
+
+sub a b c d dir -14
+
+cpy dir -14 dir -9
+
+set dir -11 int 1
+
+unt dir -9
+set dir -11 int 0
+set dir -9 int 0
+end_unt
+
+unt dir -11
+set dir -11 int 0
+
+inc e f int -1
+
+end_unt
+
+
+}
+
+fnc mod a b c d e f {
+
+div a b c d dir -7
+mul c d dir -7 dir -8
+sub a b dir -8 e f
+
+}
+
+fnc pwr a b c d e f {
+
+cpy a b dir -2
+cpy c d dir -3
+
+inc dir -3 int -1
+cpy a b dir -8
+mul dir -8 c d e f
+
+unt dir -3
+
+mul dir -2 a b e f
+cpy e f dir -2
+inc dir -3 int -1
+
+end_unt
+
+}
+
+fnc if_not a b {
+
+cpy a b dir -9
+unt dir -9
+set dir -9 int 0
+
+}
+
+fnc if a b {
+
+cpy a b dir -9
+
+set dir -11 int 1
+
+unt dir -9
+set dir -11 int 0
+set dir -9 int 0
+end_unt
+
+unt dir -11
+set dir -11 int 0
+
+}
+
+fnc if_equals a b c d {
+
+sub a b c d dir -12
+sub c d a b dir -13
+add dir -12 dir -13 dir -10
+if dir -10
+
+}
+
+fnc end_if {
+
+end_unt
+
+}
+

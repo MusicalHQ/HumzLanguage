@@ -331,10 +331,8 @@ if __name__ == "__main__":
                     raise ValueError('Run Error')
     elif editor:
         file = 'test.hl'
-        try:
-            file = parse(file,possible_commands)
-        except:
-            raise ValueError('Parsing error')
+        
+        file = parse(file,possible_commands)
         
         compiler = compiler(possible_commands)
         

@@ -1,8 +1,7 @@
-import logic.hl
+import basics.hl
 
-set dir 1 str 2
-set dir 2 str a
+set dir 1 int 1
+set dir 2 int 3
 
-if_equals dir 1 dir 2
-out dir 1 int
-end_if
+div dir 1 dir 2 dir 3
+out dir 3 int
