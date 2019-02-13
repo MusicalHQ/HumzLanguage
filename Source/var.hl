@@ -1,3 +1,6 @@
 import math.hl
 
 set_hidden_memory 20
+
+set dir -1 int 20
+
