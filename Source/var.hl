@@ -1,0 +1,3 @@
+import math.hl
+
+set_hidden_memory 20

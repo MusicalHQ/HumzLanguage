@@ -5,23 +5,23 @@ import BFPlus as BF
 import copy
 import sys
 
-possible_commands = [['jmp',2],['out',3],['set',4],['unt',2],['inc',4],['end_unt',0],['cpy',4],['mve',4],['fwd',0],['bck',0],['plu',0],['loo',0],['end_loo',0],['out_now',1],['inp',2]]
+possible_commands = [['jmp',2],['out',3],['set',4],['unt',2],['inc',4],['end_unt',0],['cpy',4],['mve',4],['fwd',0],['bck',0],['plu',0],['loo',0],['end_loo',0],['out_now',1],['inp',2],['set_hidden_memory',1]]
 
 class parse:
-    def __init__(self,file,possible_commands,recursion_limit = 1000):
+    def __init__(self,file,possible_commands,recursion_limit = 1000,import_limit = 100):
         self.recursion_limit = recursion_limit
         self.possible_commands = possible_commands
         self.raw = self.read(file)
-        self.raw = self.imports(self.raw)
-        #print(self.raw)
+        self.import_limit = import_limit
+        counter = 0
+        while self.has_import(self.raw) and counter < self.import_limit:
+            counter += 1
+            self.raw = self.imports(self.raw)
+        
         self.functions = self.get_functions(self.raw)
         self.raw = self.functions[0]
         self.functions = self.functions[1]
-        
-        #print(self.raw)
         self.parsed = self.parse(self.raw)
-        #print(self.functions)
-        #print(self.parsed)
         counter = 0
         while self.has_func(self.parsed) and counter < self.recursion_limit:
             counter += 1
@@ -30,8 +30,6 @@ class parse:
         if self.has_func(self.parsed):
             print("Reached function limit")
             raise ValueError('Reached function in function limit')
-
-        #print(self.parsed)
     
     def has_func(self,parsed):
         has_func = False
@@ -40,6 +38,14 @@ class parse:
                 if i[0] in e[0]:
                     has_func = True
         return has_func
+    
+    def has_import(self,parsed):
+        has_import = False
+        for i in parsed:
+            if i == 'import':
+                has_import = True
+        return has_import      
+    
       
     def read (self,file):
         raw = []
@@ -67,9 +73,7 @@ class parse:
         x = 0
         functions = []
         while x < (len(raw)-1):
-            #print(raw)
             if raw[x] == 'fnc':
-                
                 new_func = []
                 raw.pop(x)
                 no_args = -1
@@ -79,14 +83,11 @@ class parse:
                 raw.pop(x)
                 while not raw[x] == '}':
                     new_func.append(raw.pop(x))
-                #print(raw)
                 raw.remove('}')
-                #print(raw)
                 self.possible_commands.append([new_func[0],no_args])
                 functions.append(self.parse(new_func))
                 x = -1
             x += 1
-        #print(functions)
         return [raw,functions]                 
     
     def parse (self,raw_file):
@@ -103,7 +104,6 @@ class parse:
             for i in range(args):
                 parsed_command.append(raw.pop(0))    
             parsed.append(parsed_command)
-        #print(parsed)
         return parsed
     
     def replace_func (self,raw_file):
@@ -114,83 +114,65 @@ class parse:
         i = 0
         while i < (len(raw)):
             command = raw[i]
-            #print(command)
             is_function = False
             functions = copy.deepcopy(self.functions)
             for e,function in enumerate(functions):
                 if command[0] in function[0]:
                     is_function = True
                     break
-            
-            #print(self.functions)
             if is_function:
                 command_sub = command
                 command_sub.pop(0)
-                
                 function_sub = function[:]
                 function_sub = function_sub[0]
                 function_sub.pop(0)
-                
-                
                 sub = dict(zip(function_sub,command_sub))
-                
-                #print(sub)
                 new_function = []
                 for e in function:
                     new_function.append(list(map(sub.get, e, e)))
-                #print(new_function[1])
                 new_function.pop(0)
-                #print(new_function[1])
                 index = i
                 raw.pop(index)
                 for e in new_function:
                     raw.insert(index,e)
                     index += 1
-            #print(command)
-            i += 1
-            
-        
-        #for i in all_functions:
-        #    index = i[0]
-        #    raw.pop(index)
-        #    for e in i[1]:
-        #        raw.insert(index,e)
-        #        index += 1
-        
+            i += 1      
         return raw
         
         
 
 class compiler:
-    def __init__(self,possible_commands):
+    def __init__(self,possible_commands,hidden_memory = 10):
         self.bf_out = ''
         self.untils = []
+        self.hidden_memory = hidden_memory
         self.possible_commands = possible_commands
     
-    def jmp (self,args,compiler=False):
-        if not compiler:
-            address_type,location = args[0],(int(args[1])+10)
-        else:
-            address_type,location = args[0],(int(args[1]))
+    def set_hidden_memory (self,args):
+        value = int(args[0])
+        if value > self.hidden_memory:
+            self.hidden_memory = value
+    
+    def jmp (self,args):
+        address_type,location = args[0],(int(args[1])+self.hidden_memory)
         self.bf_out = self.bf_out + 'r[-]'
         for i in range(location):
             self.bf_out = self.bf_out + '+'
         self.bf_out = self.bf_out + 'p'
         if address_type == '!dir':
-            if not compiler:
-                self.bf_out = self.bf_out + 'p>>>>>>>>>>'
-            else:
-                self.bf_out = self.bf_out + 'p'
+            self.bf_out = self.bf_out + 'p'
+            for i in range(self.hidden_memory):
+                self.bf_out = self.bf_out + '>'
     
     def inp (self,args):
         address_type,location = args[0],args[1]
         self.jmp([address_type,location])
         self.bf_out = self.bf_out + ','
             
-    def set (self,args,compiler=False):
+    def set (self,args):
         address_type,location = args[0],args[1]
         data_type,value = args[2],args[3]
-        self.jmp([address_type,location],compiler)
+        self.jmp([address_type,location])
         self.bf_out = self.bf_out + '[-]'
         if data_type == 'str':
             value = ord(value)
@@ -207,19 +189,19 @@ class compiler:
         elif data_type == 'str':
             self.bf_out = self.bf_out + '.'
     
-    def unt (self,args,compiler = False):
-        self.jmp(args,compiler)
-        self.untils.append([args,compiler])
+    def unt (self,args):
+        self.jmp(args)
+        self.untils.append(args)
         self.bf_out = self.bf_out + '['
     
     def end_unt (self):
         args = self.untils.pop(len(self.untils)-1)
-        self.jmp(args[0],args[1])
+        self.jmp(args)
         self.bf_out = self.bf_out + ']'
     
-    def inc (self,args,compiler = False):
+    def inc (self,args):
         address_type,location,data_type,value = args[0],args[1],args[2],args[3]
-        self.jmp([address_type,location],compiler)
+        self.jmp([address_type,location])
         if data_type == 'str':
             value = ord(value)
         elif data_type == 'int':
@@ -248,14 +230,11 @@ class compiler:
     def mve (self,args):
         address_type_1,location_1,address_type_2,location_2 = args[0],args[1],args[2],args[3]
         address_type_3,location_3 = 'dir','-1'
-        self.set([address_type_3,location_3,'int',0])
+        self.set([address_type_2,location_2,'int',0])
         self.unt([address_type_1,location_1])
         self.inc([address_type_1,location_1,'int',-1])
         self.inc([address_type_2,location_2,'int',1])
-        self.inc([address_type_3,location_3,'int',1])
         self.end_unt()
-        self.jmp([address_type_3,location_3])
-        self.bf_out = self.bf_out + '[-]'
     
     def fwd (self):
         self.bf_out = self.bf_out + '>'
@@ -298,7 +277,7 @@ class compiler:
             else:
                 func_to_call()
 
-editor = False
+editor = True
 
 if __name__ == "__main__":  
     args = sys.argv[:]
@@ -362,7 +341,6 @@ if __name__ == "__main__":
         try:
             compiler.compile_code(file.parsed)
         except:
-
             raise ValueError('Compiler Error')
         
         try:

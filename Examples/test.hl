@@ -1,4 +1,8 @@
-import math.hl
+import var.hl
+
+set dir 0 int 1 
+set dir 1 int 2
+add dir 0 dir 1 dir 2
 
 
 

@@ -1,0 +1,13 @@
+import var.hl
+
+set dir 0 int 1
+set dir 1 int 2
+set dir 3 int 13
+add dir 0 dir 1 dir 2
+out dir 2 int
+out dir 3 str
+sub dir 0 dir 1 dir 2
+out dir 2 int
+out dir 3 str
+mul dir 0 dir 1 dir 2
+out dir 2 int
