@@ -1,7 +1,10 @@
 import basics.hl
 
-set dir 1 int 1
-set dir 2 int 3
+set dir 1 int 0
+set dir 2 int 0
 
-div dir 1 dir 2 dir 3
-out dir 3 int
+if dir 1
+if dir 2
+out dir 2 int
+end_if
+end_if
