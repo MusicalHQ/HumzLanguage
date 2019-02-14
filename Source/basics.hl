@@ -133,6 +133,24 @@ if dir -10
 
 }
 
+fnc if_not_equals a b c d {
+
+sub a b c d dir -12
+sub c d a b dir -13
+add dir -12 dir -13 dir -10
+if_not dir -10
+
+}
+
+fnc if_greater a b c d {
+
+sub a b c d dir -12
+sub c d a b dir -13
+sub dir -12 dir -13 dir -10
+if_not dir -10
+
+}
+
 fnc end_if {
 
 end_unt

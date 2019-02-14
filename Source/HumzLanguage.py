@@ -5,7 +5,7 @@ import BFPlus as BF
 import copy
 import sys
 
-possible_commands = [['jmp',2],['out',3],['set',4],['unt',2],['inc',4],['end_unt',0],['cpy',4],['mve',4],['fwd',0],['bck',0],['plu',0],['loo',0],['end_loo',0],['out_now',1],['inp',2],['set_hidden_memory',1]]
+possible_commands = [['jmp',2],['out',3],['set',4],['unt',2],['inc',4],['end_unt',0],['cpy',4],['mve',4],['fwd',0],['bck',0],['plu',0],['loo',0],['end_loo',0],['out_now',1],['inp',2],['set_hidden_memory',1],['def',1]]
 
 class parse:
     def __init__(self,file,possible_commands,recursion_limit = 1000,import_limit = 100):
@@ -14,6 +14,7 @@ class parse:
         self.raw = self.read(file)
         self.import_limit = import_limit
         counter = 0
+        self.hidden_memory = 0
         while self.has_import(self.raw) and counter < self.import_limit:
             counter += 1
             self.raw = self.imports(self.raw)
@@ -30,6 +31,37 @@ class parse:
         if self.has_func(self.parsed):
             print("Reached function limit")
             raise ValueError('Reached function in function limit')
+        
+        self.parsed = self.set_hidden_memory(self.parsed)
+        self.parsed = self.get_var_address(self.parsed)
+    
+    def get_var_address(self,parsed):
+        variables = []
+        variable_addresses = []
+        for i in parsed[:]:
+            if i[0] == 'def':
+                variables.append(i[1])
+                parsed.remove(i)
+        for i in variables:
+            self.hidden_memory += 1
+            variable_addresses.append(self.hidden_memory)
+        for i in range(len(parsed)):
+            for e in range(len(parsed[i])):
+                if parsed[i][e] == 'var':
+                    parsed[i][e] = 'dir'
+                if parsed[i][e] in variables and not (parsed[i][e-1] == 'int' or parsed[i][e-1] == 'str'):
+                    parsed[i][e] = variable_addresses[variables.index(parsed[i][e])]
+                
+        return parsed
+        
+    
+    def set_hidden_memory(self,parsed):
+        for i in parsed[:]:
+            if i[0] == 'set_hidden_memory':
+                if int(i[1]) > self.hidden_memory:
+                    self.hidden_memory = int(i[1])
+                parsed.remove(i)
+        return parsed
     
     def has_func(self,parsed):
         has_func = False
@@ -145,13 +177,10 @@ class compiler:
     def __init__(self,possible_commands,hidden_memory = 10):
         self.bf_out = ''
         self.untils = []
-        self.hidden_memory = hidden_memory
+        self.hidden_memory = 10
+        if hidden_memory > self.hidden_memory:
+            self.hidden_memory = hidden_memory
         self.possible_commands = possible_commands
-    
-    def set_hidden_memory (self,args):
-        value = int(args[0])
-        if value > self.hidden_memory:
-            self.hidden_memory = value
     
     def jmp (self,args):
         address_type,location = args[0],(int(args[1])+self.hidden_memory)
@@ -310,7 +339,7 @@ if __name__ == "__main__":
             except:
                 raise ValueError('Parsing error')
             
-            compiler = compiler(possible_commands)
+            compiler = compiler(possible_commands,file.hidden_memory)
             try:
                 compiler.compile_code(file.parsed)
             except:
@@ -334,12 +363,9 @@ if __name__ == "__main__":
         
         file = parse(file,possible_commands)
         
-        compiler = compiler(possible_commands)
+        compiler = compiler(possible_commands,file.hidden_memory)
         
-        try:
-            compiler.compile_code(file.parsed)
-        except:
-            raise ValueError('Compiler Error')
+        compiler.compile_code(file.parsed)
         
         try:
             BF.run(compiler.bf_out,True)
