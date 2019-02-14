@@ -1,18 +1,18 @@
 import basics.hl
 
-def a
-def b
-def c
-def new_line
+var a
+var b
+var c
+var new_line
 
-set var new_line int 13
+set dir new_line int 13
 
-inp var a
-inp var b
+inp dir a
+inp dir b
 
-out var new_line str
+out dir new_line str
 
-add var a var b var c
+add dir a dir b dir c
 
-out var c int
+out dir c int
 

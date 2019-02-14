@@ -5,7 +5,7 @@ import BFPlus as BF
 import copy
 import sys
 
-possible_commands = [['jmp',2],['out',3],['set',4],['unt',2],['inc',4],['end_unt',0],['cpy',4],['mve',4],['fwd',0],['bck',0],['plu',0],['loo',0],['end_loo',0],['out_now',1],['inp',2],['set_hidden_memory',1],['def',1]]
+possible_commands = [['jmp',2],['out',3],['set',4],['unt',2],['inc',4],['end_unt',0],['cpy',4],['mve',4],['fwd',0],['bck',0],['plu',0],['loo',0],['end_loo',0],['out_now',1],['inp',2],['set_hidden_memory',1],['var',1],['lst',2]]
 
 class parse:
     def __init__(self,file,possible_commands,recursion_limit = 1000,import_limit = 100):
@@ -39,7 +39,7 @@ class parse:
         variables = []
         variable_addresses = []
         for i in parsed[:]:
-            if i[0] == 'def':
+            if i[0] == 'var':
                 variables.append(i[1])
                 parsed.remove(i)
         for i in variables:
@@ -47,8 +47,6 @@ class parse:
             variable_addresses.append(self.hidden_memory)
         for i in range(len(parsed)):
             for e in range(len(parsed[i])):
-                if parsed[i][e] == 'var':
-                    parsed[i][e] = 'dir'
                 if parsed[i][e] in variables and not (parsed[i][e-1] == 'int' or parsed[i][e-1] == 'str'):
                     parsed[i][e] = variable_addresses[variables.index(parsed[i][e])]
                 
