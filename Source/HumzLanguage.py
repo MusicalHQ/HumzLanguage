@@ -5,7 +5,7 @@ import BFPlus as BF
 import copy
 import sys
 
-possible_commands = [['jmp',2],['out',3],['set',4],['unt',2],['inc',4],['end_unt',0],['cpy',4],['mve',4],['fwd',0],['bck',0],['plu',0],['loo',0],['end_loo',0],['out_now',1],['inp',2],['set_hidden_memory',1],['var',1],['lst',2]]
+possible_commands = [['jmp',2],['out',3],['set',4],['unt',2],['inc',4],['end_unt',0],['cpy',4],['mve',4],['fwd',0],['bck',0],['plu',0],['loo',0],['end_loo',0],['out_now',1],['inp',2],['set_hidden_memory',1],['var',1]]
 
 class parse:
     def __init__(self,file,possible_commands,recursion_limit = 1000,import_limit = 100):
@@ -36,7 +36,7 @@ class parse:
         
         self.parsed = self.set_hidden_memory(self.parsed)
         self.parsed = self.get_var_address(self.parsed)
-        self.parsed = self.get_list_address(self.parsed)
+        print(self.parsed)
     
     def get_var_address(self,parsed):
         variables = []
@@ -46,35 +46,14 @@ class parse:
                 variables.append(i[1])
                 parsed.remove(i)
         for i in variables:
+            variable_addresses.append(-self.hidden_memory)
             self.hidden_memory += 1
-            variable_addresses.append(self.hidden_memory)
         for i in range(len(parsed)):
             for e in range(len(parsed[i])):
                 if parsed[i][e] in variables and not (parsed[i][e-1] == 'int' or parsed[i][e-1] == 'str'):
                     parsed[i][e] = variable_addresses[variables.index(parsed[i][e])]
         self.variables = variables
         self.variable_addresses = variable_addresses
-        return parsed
-    
-    def get_list_address(self,parsed):
-        lists = []
-        list_addresses = []
-        for i in parsed[:]:
-            self.hidden_memory += 1
-            if i[0] == 'lst':
-                lists.append(i[1])
-                start = self.hidden_memory
-                self.hidden_memory += int(i[2])
-                list_addresses.append([start,self.hidden_memory])
-                parsed.remove(i)
-        for i in range(len(parsed)):
-            for e in range(len(parsed[i])):
-                list_reference = str(parsed[i][e]).split('[')
-                if len(list_reference) > 1:
-                    list_reference[1] = list_reference[1][:-1]
-                    variable_check = list_reference[1].split('_')
-                    print(variable_check)
-                    parsed[i][e] = list_addresses[lists.index(list_reference[0])][0]+int(list_reference[1])     
         return parsed
 
     def set_hidden_memory(self,parsed):
@@ -196,10 +175,10 @@ class parse:
         
 
 class compiler:
-    def __init__(self,possible_commands,hidden_memory = 10):
+    def __init__(self,possible_commands,hidden_memory = 20):
         self.bf_out = ''
         self.untils = []
-        self.hidden_memory = 10
+        self.hidden_memory = 20
         if hidden_memory > self.hidden_memory:
             self.hidden_memory = hidden_memory
         self.possible_commands = possible_commands

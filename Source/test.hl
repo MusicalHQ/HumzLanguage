@@ -1,10 +1,14 @@
 import basics.hl
 
-lst new_list 5
-lst new_list_2 5
+var a
+var b
 
+set dir a int 0
+set dir b int 5
+set dir 0 int 1000
 
-set dir new_list[dir_0] int 1
-
-out dir new_list[dir_0] int
-
+unt dir b
+out dir a int
+inc dir a int 1
+inc dir b int -1
+end_unt
