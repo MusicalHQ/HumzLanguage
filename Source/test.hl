@@ -1,18 +1,10 @@
 import basics.hl
 
-var a
-var b
-var c
-var new_line
+lst new_list 5
+lst new_list_2 5
 
-set dir new_line int 13
 
-inp dir a
-inp dir b
+set dir new_list[dir_0] int 1
 
-out dir new_line str
-
-add dir a dir b dir c
-
-out dir c int
+out dir new_list[dir_0] int
 

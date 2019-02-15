@@ -12,6 +12,8 @@ class parse:
         self.recursion_limit = recursion_limit
         self.possible_commands = possible_commands
         self.raw = self.read(file)
+        self.variables = None
+        self.variable_addresses = None
         self.import_limit = import_limit
         counter = 0
         self.hidden_memory = 0
@@ -34,6 +36,7 @@ class parse:
         
         self.parsed = self.set_hidden_memory(self.parsed)
         self.parsed = self.get_var_address(self.parsed)
+        self.parsed = self.get_list_address(self.parsed)
     
     def get_var_address(self,parsed):
         variables = []
@@ -49,10 +52,31 @@ class parse:
             for e in range(len(parsed[i])):
                 if parsed[i][e] in variables and not (parsed[i][e-1] == 'int' or parsed[i][e-1] == 'str'):
                     parsed[i][e] = variable_addresses[variables.index(parsed[i][e])]
-                
+        self.variables = variables
+        self.variable_addresses = variable_addresses
         return parsed
-        
     
+    def get_list_address(self,parsed):
+        lists = []
+        list_addresses = []
+        for i in parsed[:]:
+            self.hidden_memory += 1
+            if i[0] == 'lst':
+                lists.append(i[1])
+                start = self.hidden_memory
+                self.hidden_memory += int(i[2])
+                list_addresses.append([start,self.hidden_memory])
+                parsed.remove(i)
+        for i in range(len(parsed)):
+            for e in range(len(parsed[i])):
+                list_reference = str(parsed[i][e]).split('[')
+                if len(list_reference) > 1:
+                    list_reference[1] = list_reference[1][:-1]
+                    variable_check = list_reference[1].split('_')
+                    print(variable_check)
+                    parsed[i][e] = list_addresses[lists.index(list_reference[0])][0]+int(list_reference[1])     
+        return parsed
+
     def set_hidden_memory(self,parsed):
         for i in parsed[:]:
             if i[0] == 'set_hidden_memory':
