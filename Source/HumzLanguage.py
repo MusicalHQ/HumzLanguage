@@ -20,7 +20,7 @@ class parse:
         while self.has_import(self.raw) and counter < self.import_limit:
             counter += 1
             self.raw = self.imports(self.raw)
-        
+
         self.functions = self.get_functions(self.raw)
         self.raw = self.functions[0]
         self.functions = self.functions[1]
@@ -29,15 +29,14 @@ class parse:
         while self.has_func(self.parsed) and counter < self.recursion_limit:
             counter += 1
             self.parsed = self.replace_func(self.parsed)
-        
+
         if self.has_func(self.parsed):
             print("Reached function limit")
             raise ValueError('Reached function in function limit')
-        
+
         self.parsed = self.set_hidden_memory(self.parsed)
         self.parsed = self.get_var_address(self.parsed)
-        print(self.parsed)
-    
+
     def get_var_address(self,parsed):
         variables = []
         variable_addresses = []
@@ -63,7 +62,7 @@ class parse:
                     self.hidden_memory = int(i[1])
                 parsed.remove(i)
         return parsed
-    
+
     def has_func(self,parsed):
         has_func = False
         for i in parsed:
@@ -71,15 +70,15 @@ class parse:
                 if i[0] in e[0]:
                     has_func = True
         return has_func
-    
+
     def has_import(self,parsed):
         has_import = False
         for i in parsed:
             if i == 'import':
                 has_import = True
-        return has_import      
-    
-      
+        return has_import
+
+
     def read (self,file):
         raw = []
         with open(file,'r') as f:
@@ -99,8 +98,8 @@ class parse:
                 raw = new_raw + raw
             x += 1
         return raw
-                
-    
+
+
     def get_functions (self,raw_file):
         raw = raw_file
         x = 0
@@ -121,8 +120,8 @@ class parse:
                 functions.append(self.parse(new_func))
                 x = -1
             x += 1
-        return [raw,functions]                 
-    
+        return [raw,functions]
+
     def parse (self,raw_file):
         raw = raw_file
         parsed = []
@@ -135,15 +134,15 @@ class parse:
                 if i[0] == command:
                     break
             for i in range(args):
-                parsed_command.append(raw.pop(0))    
+                parsed_command.append(raw.pop(0))
             parsed.append(parsed_command)
         return parsed
-    
+
     def replace_func (self,raw_file):
         raw = copy.deepcopy(raw_file)
-        
+
         all_functions = []
-        
+
         i = 0
         while i < (len(raw)):
             command = raw[i]
@@ -169,10 +168,10 @@ class parse:
                 for e in new_function:
                     raw.insert(index,e)
                     index += 1
-            i += 1      
+            i += 1
         return raw
-        
-        
+
+
 
 class compiler:
     def __init__(self,possible_commands,hidden_memory = 20):
@@ -182,7 +181,7 @@ class compiler:
         if hidden_memory > self.hidden_memory:
             self.hidden_memory = hidden_memory
         self.possible_commands = possible_commands
-    
+
     def jmp (self,args):
         address_type,location = args[0],(int(args[1])+self.hidden_memory)
         self.bf_out = self.bf_out + 'r[-]'
@@ -193,12 +192,12 @@ class compiler:
             self.bf_out = self.bf_out + 'p'
             for i in range(self.hidden_memory):
                 self.bf_out = self.bf_out + '>'
-    
+
     def inp (self,args):
         address_type,location = args[0],args[1]
         self.jmp([address_type,location])
         self.bf_out = self.bf_out + ','
-            
+
     def set (self,args):
         address_type,location = args[0],args[1]
         data_type,value = args[2],args[3]
@@ -210,7 +209,7 @@ class compiler:
             value = int(value)
         for i in range(value):
             self.bf_out = self.bf_out + '+'
-    
+
     def out (self,args):
         address_type,location,data_type = args[0],args[1],args[2]
         self.jmp([address_type,location])
@@ -218,17 +217,17 @@ class compiler:
             self.bf_out = self.bf_out + 'o'
         elif data_type == 'str':
             self.bf_out = self.bf_out + '.'
-    
+
     def unt (self,args):
         self.jmp(args)
         self.untils.append(args)
         self.bf_out = self.bf_out + '['
-    
+
     def end_unt (self):
         args = self.untils.pop(len(self.untils)-1)
         self.jmp(args)
         self.bf_out = self.bf_out + ']'
-    
+
     def inc (self,args):
         address_type,location,data_type,value = args[0],args[1],args[2],args[3]
         self.jmp([address_type,location])
@@ -241,7 +240,7 @@ class compiler:
             char = '+'
         for i in range(abs(value)):
             self.bf_out = self.bf_out + char
-    
+
     def cpy (self,args):
         address_type_1,location_1,address_type_2,location_2 = args[0],args[1],args[2],args[3]
         address_type_3,location_3 = 'dir','-1'
@@ -254,9 +253,9 @@ class compiler:
         self.end_unt()
         self.unt([address_type_3,location_3])
         self.inc([address_type_1,location_1,'int',1])
-        self.inc([address_type_3,location_3,'int',-1])      
+        self.inc([address_type_3,location_3,'int',-1])
         self.end_unt()
-    
+
     def mve (self,args):
         address_type_1,location_1,address_type_2,location_2 = args[0],args[1],args[2],args[3]
         address_type_3,location_3 = 'dir','-1'
@@ -265,33 +264,33 @@ class compiler:
         self.inc([address_type_1,location_1,'int',-1])
         self.inc([address_type_2,location_2,'int',1])
         self.end_unt()
-    
+
     def fwd (self):
         self.bf_out = self.bf_out + '>'
-        
+
     def bck (self):
         self.bf_out = self.bf_out + '<'
-        
+
     def plu (self):
         self.bf_out = self.bf_out + '+'
 
     def min (self):
-        self.bf_out = self.bf_out + '-'  
-    
+        self.bf_out = self.bf_out + '-'
+
     def loo (self):
         self.bf_out = self.bf_out + '['
 
     def end_loo (self):
-        self.bf_out = self.bf_out + ']'       
-    
+        self.bf_out = self.bf_out + ']'
+
     def out_now (self,args):
         data_type = args[0]
-        self.bf_out = self.bf_out + '.'   
+        self.bf_out = self.bf_out + '.'
         if data_type == 'int':
             self.bf_out = self.bf_out + 'o'
         elif data_type == 'str':
-            self.bf_out = self.bf_out + '.'        
-        
+            self.bf_out = self.bf_out + '.'
+
     def compile_code (self,code):
         local_code = code
         for i in local_code:
@@ -309,11 +308,11 @@ class compiler:
 
 editor = True
 
-if __name__ == "__main__":  
+if __name__ == "__main__":
     args = sys.argv[:]
     if len(args) > 1:
         if not editor:
-            
+
             args.pop(0)
             file = args.pop(0)
             run = False
@@ -333,27 +332,27 @@ if __name__ == "__main__":
                 elif i == '-c':
                     compiled_print = True
             with open(file,'r') as brain_file:
-                brain = brain_file.read()  
-            
+                brain = brain_file.read()
+
             try:
                 file = parse(file,possible_commands)
             except:
                 raise ValueError('Parsing error')
-            
+
             compiler = compiler(possible_commands,file.hidden_memory)
             try:
                 compiler.compile_code(file.parsed)
             except:
                 raise ValueError('Compiler Error')
-            
+
             if out:
                 file_object  = open(name, 'w')
                 file_object.write(compiler.bf_out)
                 file_object.close()
-                
+
             if compiled_print:
                 print(compiler.bf_out)
-            
+
             if run:
                 try:
                     BF.run(compiler.bf_out,debug)
@@ -361,22 +360,17 @@ if __name__ == "__main__":
                     raise ValueError('Run Error')
     elif editor:
         file = 'test.hl'
-        
+
         file = parse(file,possible_commands)
-        
+
         compiler = compiler(possible_commands,file.hidden_memory)
-        
+
         compiler.compile_code(file.parsed)
-        
+
         try:
             BF.run(compiler.bf_out,True)
         except:
             raise ValueError('Run Error')
-    
+
     else:
         print("No args passed - see docs for help")
-            
-            
-        
-
-    
