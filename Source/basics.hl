@@ -1,6 +1,17 @@
 set_hidden_memory 20
 
+var new_line_var
+var forever
+set dir forever int 1
+set dir new_line_var int 10
+
 set dir -9 int 0
+
+fnc new_line {
+
+out dir new_line_var str
+
+}
 
 fnc add a b c d e f {
 

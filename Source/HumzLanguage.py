@@ -366,10 +366,16 @@ if __name__ == "__main__":
         compiler = compiler(possible_commands,file.hidden_memory)
         compiler.compile_code(file.parsed)
 
+        optimize = True
         print(compiler.bf_out)
-
+        brain = compiler.bf_out
+        optimized =  BF.optimize_brain(brain)
+        if optimize:
+            brain_run = optimized
+        else:
+            brain_run = brain
         try:
-            BF.run(compiler.bf_out,True)
+            BF.run(brain_run,True)
         except:
             raise ValueError('Run Error')
 

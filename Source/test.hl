@@ -2,25 +2,19 @@ import basics.hl
 
 var a
 var b
-var c
-var new_line
+var length
+var swap
 
+set dir length int 10
 set dir a int 0
 set dir b int 1
-set dir c int 10
-set dir new_line int 10
 
-out dir a int
-out dir new_line str
-out dir b int
-out dir new_line str
-
-unt dir c
-add dir a dir b dir a
-out dir a int
-out dir new_line str
-add dir b dir a dir b
-out dir b int
-out dir new_line str
-inc dir c int -1
+unt dir length
+add dir a dir b dir swap
+cpy dir swap dir a
+add dir a dir b dir swap
+cpy dir swap dir b
+inc dir length int -1
 end_unt
+
+out dir a int
