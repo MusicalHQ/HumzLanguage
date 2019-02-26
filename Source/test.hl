@@ -2,13 +2,25 @@ import basics.hl
 
 var a
 var b
+var c
+var new_line
 
 set dir a int 0
-set dir b int 5
-set dir 0 int 1000
+set dir b int 1
+set dir c int 10
+set dir new_line int 10
 
-unt dir b
 out dir a int
-inc dir a int 1
-inc dir b int -1
+out dir new_line str
+out dir b int
+out dir new_line str
+
+unt dir c
+add dir a dir b dir a
+out dir a int
+out dir new_line str
+add dir b dir a dir b
+out dir b int
+out dir new_line str
+inc dir c int -1
 end_unt

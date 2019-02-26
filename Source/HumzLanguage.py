@@ -240,6 +240,7 @@ class compiler:
             char = '+'
         for i in range(abs(value)):
             self.bf_out = self.bf_out + char
+        #self.bf_out = self.bf_out + 'a' + str(value) + 'b'
 
     def cpy (self,args):
         address_type_1,location_1,address_type_2,location_2 = args[0],args[1],args[2],args[3]
@@ -362,10 +363,10 @@ if __name__ == "__main__":
         file = 'test.hl'
 
         file = parse(file,possible_commands)
-
         compiler = compiler(possible_commands,file.hidden_memory)
-
         compiler.compile_code(file.parsed)
+
+        print(compiler.bf_out)
 
         try:
             BF.run(compiler.bf_out,True)

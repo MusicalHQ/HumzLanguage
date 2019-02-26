@@ -1,22 +1,17 @@
 #brainfuck extended
 import sys
 
+
+
 def run(brain,show_memory = False):
     memory = [0]
-    brain = brain + " "
+
     counter = 0
     e = 0
     while e < len(brain):
         i = brain[e]
         if i == '+':
-            f = 0
-            total = 0
-            while brain[e + f] == '+' and (e+f) < (len(brain)-1):
-                f += 1
-            memory[counter] += f
-            e += f
-            e -= 1
-            #memory[counter] += 1
+            memory[counter] += 1
         elif i == 'p':
             counter = memory[counter]
             if counter > (len(memory)-1):
@@ -28,17 +23,8 @@ def run(brain,show_memory = False):
             counter = len(memory)-1
             #memory.append(0)
         elif i == '-':
-            f = 0
-            total = 0
-            while brain[e + f] == '-' and (e+f) < (len(brain)-1):
-                f += 1
-            memory[counter] -= f
-            if memory[counter] < 0:
-                memory[counter] = 0
-            e += f
-            e -= 1
-            #if memory[counter] > 0:
-            #    memory[counter] -= 1
+            if memory[counter] > 0:
+                memory[counter] -= 1
         elif i == '>':
             counter += 1
             if counter > (len(memory)-1):
@@ -57,15 +43,10 @@ def run(brain,show_memory = False):
                 loop_counter = 1
                 while not loop_counter == 0:
                     e += 1
-                    #print(brain[e],loop_counter)
                     if brain[e] == '[':
                         loop_counter += 1
                     elif brain[e] == ']':
                         loop_counter -= 1
-            elif brain[e+1] == '-' and brain[e+2] == ']':
-                memory[counter] = 0
-                e += 2
-
         elif i == ']':
             if not memory[counter] == 0:
                 loop_counter = 1
@@ -81,13 +62,13 @@ def run(brain,show_memory = False):
         print(memory)
 
 if __name__ == "__main__":
-    try:
-        file = sys.argv[1]
-        with open(file,'r') as brain_file:
-            brain = brain_file.read()
-    except:
-        print("No args passed")
-        file = 'bf.bf'
-        with open(file,'r') as brain_file:
-            brain = brain_file.read()
-    run(brain,True)
+    #try:
+    #    file = sys.argv[1]
+    #    with open(file,'r') as brain_file:
+    #        brain = brain_file.read()
+    #except:
+    #    print("No args passed")
+    #    file = 'bf.bf'
+    #    with open(file,'r') as brain_file:
+    #        brain = brain_file.read()
+    run("++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.",True)
