@@ -1,20 +1,20 @@
 import basics.hl
 
-var a
-var b
-var length
-var swap
+var stair_char
+var number
+var current_stair
 
-set dir length int 10
-set dir a int 0
-set dir b int 1
+set dir current_stair int 1
+set dir stair_char str #
+inp dir number
 
-unt dir length
-add dir a dir b dir swap
-cpy dir swap dir a
-add dir a dir b dir swap
-cpy dir swap dir b
-inc dir length int -1
+unt dir number
+cpy dir current_stair dir 0
+unt dir 0
+out dir stair_char str
+inc dir 0 int -1
 end_unt
-
-out dir a int
+inc dir current_stair int 1
+new_line
+inc dir number int -1
+end_unt

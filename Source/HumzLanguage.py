@@ -15,6 +15,7 @@ class parse:
         self.variables = None
         self.variable_addresses = None
         self.import_limit = import_limit
+        self.imported = []
         counter = 0
         self.hidden_memory = 0
         while self.has_import(self.raw) and counter < self.import_limit:
@@ -78,7 +79,6 @@ class parse:
                 has_import = True
         return has_import
 
-
     def read (self,file):
         raw = []
         with open(file,'r') as f:
@@ -94,8 +94,11 @@ class parse:
             if raw[x] == 'import':
                 raw.pop(x)
                 file = raw.pop(x)
-                new_raw = self.read(file)
-                raw = new_raw + raw
+                if not file in self.imported:
+                    new_raw = self.read(file)
+                    raw = new_raw + raw
+                    self.imported.append(file)
+                x -= 1
             x += 1
         return raw
 
@@ -320,6 +323,7 @@ if __name__ == "__main__":
             out = False
             debug = False
             compiled_print = False
+            optimize = True
             name = 'output.hl'
             for i in args:
                 if i == '-r':
@@ -332,6 +336,8 @@ if __name__ == "__main__":
                     debug = True
                 elif i == '-c':
                     compiled_print = True
+                elif i == '-f':
+                    optimize = False
             with open(file,'r') as brain_file:
                 brain = brain_file.read()
 
@@ -354,9 +360,14 @@ if __name__ == "__main__":
             if compiled_print:
                 print(compiler.bf_out)
 
+            brain = compiler.bf_out
+
+            if optimize:
+                brain = BF.optimize_brain(brain)
+
             if run:
                 try:
-                    BF.run(compiler.bf_out,debug)
+                    BF.run(brain,debug)
                 except:
                     raise ValueError('Run Error')
     elif editor:
