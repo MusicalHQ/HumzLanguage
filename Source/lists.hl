@@ -1,1 +1,92 @@
 import basics.hl
+
+var _list_start
+var _list_index
+var _swap
+var _temp
+
+set dir _list_start int 0
+
+fnc list name length {
+
+var name
+cpy dir _list_start dir name
+set !dir _list_start int length
+inc dir _list_start int length
+inc dir _list_start int 1
+
+}
+
+fnc list_set name index type value {
+
+cpy dir name dir _list_index
+inc dir _list_index int index
+inc dir _list_index int 1
+set !dir _list_index type value
+
+}
+
+fnc list_out name index type {
+
+cpy dir name dir _list_index
+inc dir _list_index int index
+inc dir _list_index int 1
+out !dir _list_index type
+
+}
+
+fnc list_set_index name address_type address type value {
+
+add dir name address_type address dir _list_index
+inc dir _list_index int 1
+set !dir _list_index type value
+
+}
+
+fnc list_out_index name address_type address type {
+
+add dir name address_type address dir _list_index
+inc dir _list_index int 1
+out !dir _list_index type
+
+}
+
+fnc list_get name index address_type address {
+
+cpy dir name dir _list_index
+inc dir _list_index int index
+inc dir _list_index int 1
+cpy !dir _list_index address_type address
+
+}
+
+fnc list_get_index name address_type address address_type_1 address_1 {
+
+add dir name address_type address dir _list_index
+inc dir _list_index int 1
+cpy !dir _list_index address_type_1 address_1
+
+}
+
+fnc list_len name address_type address {
+
+cpy !dir name address_type address
+
+}
+
+fnc list_cpy name index address_type address {
+
+cpy dir name dir _list_index
+inc dir _list_index int index
+inc dir _list_index int 1
+cpy address_type address !dir _list_index
+
+}
+
+fnc list_cpy_index name address_type address address_type_1 address_1 {
+
+add dir name address_type address dir _list_index
+inc dir _list_index int 1
+cpy address_type_1 address_1 !dir _list_index
+
+}

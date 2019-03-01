@@ -1,20 +1,16 @@
-import basics.hl
+import everything.hl
 
-var stair_char
-var number
-var current_stair
+var a
+var b
+var c
+list jeb 2
+list yeet 5
 
-set dir current_stair int 1
-set dir stair_char str #
-inp dir number
+set dir c int 0
+set dir a int 10
 
-unt dir number
-cpy dir current_stair dir 0
-unt dir 0
-out dir stair_char str
-inc dir 0 int -1
-end_unt
-inc dir current_stair int 1
-new_line
-inc dir number int -1
-end_unt
+list_cpy_index jeb dir c dir a
+
+list_get jeb 0 dir b
+
+out dir b int
