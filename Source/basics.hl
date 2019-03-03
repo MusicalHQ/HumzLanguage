@@ -16,7 +16,7 @@ var _temp_12
 var _temp_13
 
 set dir forever int 1
-set dir new_line_var int 10
+set dir new_line_var int 13
 
 set dir _temp_8 int 0
 

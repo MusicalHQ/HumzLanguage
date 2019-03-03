@@ -29,7 +29,6 @@ list_set buzz 3 str z
 
 
 unt dir done
-new_line
 inc dir counter int 1
 
 mod dir counter dir three dir temp

@@ -4,6 +4,7 @@ var _list_start
 var _list_index
 var _swap
 var _temp
+var _temp_list
 
 set dir _list_start int 0
 
@@ -88,5 +89,18 @@ fnc list_cpy_index name address_type address address_type_1 address_1 {
 add dir name address_type address dir _list_index
 inc dir _list_index int 1
 cpy address_type_1 address_1 !dir _list_index
+
+}
+
+fnc out_list name type {
+
+cpy dir name dir _list_index
+cpy !dir name dir _temp_list
+
+unt dir _temp_list
+inc dir _temp_list int -1
+inc dir _list_index int 1
+out !dir _list_index type
+end_unt
 
 }
