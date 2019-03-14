@@ -94,6 +94,7 @@ cpy address_type_1 address_1 !dir _list_index
 
 fnc out_list name type {
 
+
 cpy dir name dir _list_index
 cpy !dir name dir _temp_list
 

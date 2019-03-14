@@ -54,6 +54,8 @@ class parse:
                     parsed[i][e] = variable_addresses[variables.index(parsed[i][e])]
         self.variables = variables
         self.variable_addresses = variable_addresses
+        print(self.variable_addresses)
+        print(self.variables)
         return parsed
 
     def set_hidden_memory(self,parsed):
