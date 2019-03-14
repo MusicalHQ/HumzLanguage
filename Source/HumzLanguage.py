@@ -325,7 +325,7 @@ if __name__ == "__main__":
             debug = False
             compiled_print = False
             optimize = True
-            c_compile = True
+            c_compile = False
             name = 'output.hl'
             for i in args:
                 if i == '-r':
