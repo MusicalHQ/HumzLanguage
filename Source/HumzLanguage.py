@@ -373,7 +373,7 @@ if __name__ == "__main__":
                 except:
                     raise ValueError('Run Error')
     elif editor:
-        file = 'hello_world.hl'
+        file = 'test.hl'
 
         file = parse(file,possible_commands)
         compiler = compiler(possible_commands,file.hidden_memory)
