@@ -927,6 +927,56 @@ if(*ptr != 0) {--*ptr;}
 ++*ptr;
 ++*ptr;
 ++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
+++*ptr;
 ptr = start;
 while(*ptr){
 if(*ptr != 0) {--*ptr;}
@@ -18342,11 +18392,6 @@ if(*ptr != 0) {--*ptr;}
 ptr = start + *ptr;
 }
 
-    printf(" Memory: ");
-    for (int i = 0; i < 50; i++)
-    {
-        printf("%d, ", array[i]);
-    }
     return 0;
     }
     
