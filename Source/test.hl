@@ -13,7 +13,7 @@ list buzz 4
 set dir counter int 0
 set dir three int 3
 set dir five int 5
-set dir done int 25
+set dir done int 50
 
 list_set fizz 0 str f
 list_set fizz 1 str i
@@ -27,6 +27,7 @@ list_set buzz 3 str z
 
 
 unt dir done
+new_line
 inc dir counter int 1
 
 mod dir counter dir three dir temp
@@ -46,5 +47,4 @@ end_if
 end_if
 
 inc dir done int -1
-new_line
 end_unt

@@ -373,7 +373,7 @@ if __name__ == "__main__":
                 except:
                     raise ValueError('Run Error')
     elif editor:
-        file = 'test.hl'
+        file = 'hello_world.hl'
 
         file = parse(file,possible_commands)
         compiler = compiler(possible_commands,file.hidden_memory)
@@ -383,6 +383,12 @@ if __name__ == "__main__":
         print(compiler.bf_out)
         brain = compiler.bf_out
         optimized =  BF.optimize_brain(brain)
+
+        file_object  = open("test.txt", 'w')
+        file_object.write(brain)
+        file_object.close()
+
+
         if optimize:
             brain_run = optimized
         else:
