@@ -4,6 +4,7 @@
 import BFPlus as BF
 import copy
 import sys
+from c_compiler import *
 
 possible_commands = [['jmp',2],['out',3],['set',4],['unt',2],['inc',4],['end_unt',0],['cpy',4],['mve',4],['fwd',0],['bck',0],['plu',0],['loo',0],['end_loo',0],['out_now',1],['inp',2],['set_hidden_memory',1],['var',1]]
 
@@ -54,8 +55,6 @@ class parse:
                     parsed[i][e] = variable_addresses[variables.index(parsed[i][e])]
         self.variables = variables
         self.variable_addresses = variable_addresses
-        print(self.variable_addresses)
-        print(self.variables)
         return parsed
 
     def set_hidden_memory(self,parsed):
@@ -312,7 +311,7 @@ class compiler:
             else:
                 func_to_call()
 
-editor = True
+editor = False
 
 if __name__ == "__main__":
     args = sys.argv[:]
@@ -326,6 +325,7 @@ if __name__ == "__main__":
             debug = False
             compiled_print = False
             optimize = True
+            c_compile = False
             name = 'output.hl'
             for i in args:
                 if i == '-r':
@@ -340,6 +340,8 @@ if __name__ == "__main__":
                     compiled_print = True
                 elif i == '-f':
                     optimize = False
+                elif i == '-compile':
+                    c_compile = True
             with open(file,'r') as brain_file:
                 brain = brain_file.read()
 
@@ -364,6 +366,9 @@ if __name__ == "__main__":
 
             brain = compiler.bf_out
 
+            if c_compile:
+                compiler_bf_exe(brain,name)
+
             if optimize:
                 brain = BF.optimize_brain(brain)
 
@@ -382,6 +387,9 @@ if __name__ == "__main__":
         optimize = True
         print(compiler.bf_out)
         brain = compiler.bf_out
+
+        compiler_bf_exe(brain,"test.exe")
+
         optimized =  BF.optimize_brain(brain)
 
         file_object  = open("test.txt", 'w')
