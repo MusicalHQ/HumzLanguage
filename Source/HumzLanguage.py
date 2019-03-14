@@ -54,6 +54,8 @@ class parse:
                     parsed[i][e] = variable_addresses[variables.index(parsed[i][e])]
         self.variables = variables
         self.variable_addresses = variable_addresses
+        print(self.variable_addresses)
+        print(self.variables)
         return parsed
 
     def set_hidden_memory(self,parsed):
@@ -381,6 +383,12 @@ if __name__ == "__main__":
         print(compiler.bf_out)
         brain = compiler.bf_out
         optimized =  BF.optimize_brain(brain)
+
+        file_object  = open("test.txt", 'w')
+        file_object.write(brain)
+        file_object.close()
+
+
         if optimize:
             brain_run = optimized
         else:

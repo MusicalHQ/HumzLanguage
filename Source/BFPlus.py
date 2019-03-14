@@ -72,8 +72,8 @@ def run(brain,show_memory = False):
                     memory.append(0)
         elif i == 'r':
             counter = 0
-        elif i == 'l':
-            counter = len(memory)-1
+        #elif i == 'l':
+        #    counter = len(memory)-1
             #memory.append(0)
         elif i == '-':
             f = 0
