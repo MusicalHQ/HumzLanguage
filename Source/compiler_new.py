@@ -11,7 +11,7 @@ import os
 preamble = '''
 #include <stdio.h>
 
-char array[30000] = {0};
+unsigned char array[30000] = {0};
 char *start = array;
 char *ptr = array;
 
@@ -35,11 +35,12 @@ instructions = sys.argv[2]
 with open(instructions, "r") as f:
     instructions = f.readline()
 
+debug = "for (int i = 0; i < 50; i++){printf(\"%d, \", array[i]);}\nprintf(\"\\n\");"
 
 translation = {">": "++ptr;\n",
                "<": "--ptr;\n",
                "+": "++*ptr;\n",
-               "-": "--*ptr;\n",
+               "-": "if(*ptr != 0) {--*ptr;}\n",
                ".": "putchar(*ptr);\n",
                ",": "*ptr=getchar();\n",
                "[": "while(*ptr){\n",
@@ -54,9 +55,10 @@ transpiled = ""
 for instruction in instructions:
     if instruction in translation.keys():
         transpiled += translation[instruction]
+#        transpiled += debug
 
 with open(outfile + ".c", "w") as f:
     f.write(preamble + transpiled + end)
 
 os.system("gcc -Wall -g " + outfile + ".c " + "-o " + outfile)
-#os.system("del " + outfile + ".c")
+os.system("del " + outfile + ".c")
