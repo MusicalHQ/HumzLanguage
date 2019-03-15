@@ -13,7 +13,7 @@ list buzz 4
 set dir counter int 0
 set dir three int 3
 set dir five int 5
-set dir done int 100
+set dir done int 500
 
 list_set fizz 0 str f
 list_set fizz 1 str i
