@@ -4,7 +4,7 @@
 import BFPlus as BF
 import copy
 import sys
-from c_compiler import *
+from compiler import *
 
 possible_commands = [['jmp',2],['out',3],['set',4],['unt',2],['inc',4],['end_unt',0],['cpy',4],['mve',4],['fwd',0],['bck',0],['plu',0],['loo',0],['end_loo',0],['out_now',1],['inp',2],['set_hidden_memory',1],['var',1]]
 
