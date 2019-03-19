@@ -1,5 +1,6 @@
 #brainfuck extended
 import sys
+import readchar
 
 def optimize_brain(brain):
     brain = brain + ' '
@@ -95,11 +96,11 @@ def run(brain,show_memory = False):
             if counter > 0:
                 counter -= 1
         elif i == '.':
-            print(chr(memory[counter]),end='')
+            print(chr(memory[counter]),end='',flush=True)
         elif i == 'o':
-            print(memory[counter],end='')
+            print(memory[counter],end='',flush=True)
         elif i == ',':
-            memory[counter] = int(input(""))
+            memory[counter] = ord(readchar.readchar().decode())
         elif i == '[':
             if memory[counter] == 0:
                 loop_counter = 1

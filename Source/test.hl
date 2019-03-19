@@ -1,50 +1,7 @@
 import everything.hl
 
-var counter
-var three
-var five
-var done
-var temp
-var temp_1
+var a
 
-list fizz 4
-list buzz 4
+inp dir a
 
-set dir counter int 0
-set dir three int 3
-set dir five int 5
-set dir done int 500
-
-list_set fizz 0 str f
-list_set fizz 1 str i
-list_set fizz 2 str z
-list_set fizz 3 str z
-
-list_set buzz 0 str b
-list_set buzz 1 str u
-list_set buzz 2 str z
-list_set buzz 3 str z
-
-
-unt dir done
-new_line
-inc dir counter int 1
-
-mod dir counter dir three dir temp
-if dir temp
-out_list fizz str
-end_if
-
-mod dir counter dir five dir temp_1
-if dir temp_1
-out_list buzz str
-end_if
-
-if_not dir temp
-if_not dir temp_1
-out dir counter int
-end_if
-end_if
-
-inc dir done int -1
-end_unt
+out dir a str
