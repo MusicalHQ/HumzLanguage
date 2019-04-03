@@ -42,7 +42,7 @@ def compiler_bf_exe(instructions,outfile):
                    "+": "*ptr += ",
                    "-": "if(*ptr != 0) {*ptr -= ",
                    ".": "putchar(*ptr);\n",
-                   ",": "*ptr = getch();\nprintf(\"%c\", (char) *ptr);\n",
+                   ",": "*ptr = getch();\n",
                    "[": "while(*ptr){\n",
                    "]": "}\n",
                    "c": "*ptr=0;\n",
