@@ -4,7 +4,7 @@
 import BFPlus as BF
 import copy
 import sys
-from compiler import *
+from optimized_compiler import *
 
 possible_commands = [['jmp',2],['out',3],['set',4],['unt',2],['inc',4],['end_unt',0],['cpy',4],['mve',4],['fwd',0],['bck',0],['plu',0],['loo',0],['end_loo',0],['out_now',1],['inp',2],['set_hidden_memory',1],['var',1]]
 
@@ -188,7 +188,7 @@ class compiler:
 
     def jmp (self,args):
         address_type,location = args[0],(int(args[1])+self.hidden_memory)
-        self.bf_out = self.bf_out + 'r[-]'
+        self.bf_out = self.bf_out + 'rc'
         for i in range(location):
             self.bf_out = self.bf_out + '+'
         self.bf_out = self.bf_out + 'p'
@@ -206,7 +206,7 @@ class compiler:
         address_type,location = args[0],args[1]
         data_type,value = args[2],args[3]
         self.jmp([address_type,location])
-        self.bf_out = self.bf_out + '[-]'
+        self.bf_out = self.bf_out + 'c'
         if data_type == 'str':
             value = ord(value)
         elif data_type == 'int':
@@ -388,13 +388,13 @@ if __name__ == "__main__":
         print(compiler.bf_out)
         brain = compiler.bf_out
 
-        compiler_bf_exe(brain,"test.exe")
+        #compiler_bf_exe(brain,"test.exe")
 
         optimized =  BF.optimize_brain(brain)
 
-        file_object  = open("test.txt", 'w')
-        file_object.write(brain)
-        file_object.close()
+        #file_object  = open("test.txt", 'w')
+        #file_object.write(brain)
+        #file_object.close()
 
 
         if optimize:

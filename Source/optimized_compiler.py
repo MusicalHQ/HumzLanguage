@@ -23,11 +23,6 @@ int main()
 '''
 
 end = '''
-printf("Memory: ");
-for (int i = 0; i < 50; i++)
-{
-    printf("%d, ", array[i]);
-}
 return 0;
 }
 '''
@@ -60,7 +55,7 @@ def compiler_bf_exe(instructions,outfile):
         if instruction in [">", "<", "+", "-"]: # Only instructions that can be compressed if repeated
             remaining_instructions = instructions[i+1:]
 
-            
+
             # Work the number of consecutive instances of the instruction that directly follow the instruction itself
             n_repetitions = 0
             for remaining_instruction in remaining_instructions:
@@ -68,14 +63,14 @@ def compiler_bf_exe(instructions,outfile):
                     break
                 n_repetitions += 1
 
-            n_repetitions += 1 # Include first occurence 
+            n_repetitions += 1 # Include first occurence
 
             if instruction in [">", "<", "+"]: # Same line ending
                 transpiled += translation[instruction] + str(n_repetitions) + ";\n"
             elif instruction == "-":
                 transpiled += translation[instruction] + str(n_repetitions) + ";}\n"
 
-            i += n_repetitions # Skip forward by the number of symbols we have already parsed 
+            i += n_repetitions # Skip forward by the number of symbols we have already parsed
         else:
             transpiled += translation[instruction]
             i += 1
