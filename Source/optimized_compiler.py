@@ -12,6 +12,7 @@ import os
 
 preamble = '''
 #include <stdio.h>
+#include <conio.h>
 
 unsigned int array[30000] = {0};
 unsigned int *start = array;
@@ -41,7 +42,7 @@ def compiler_bf_exe(instructions,outfile):
                    "+": "*ptr += ",
                    "-": "if(*ptr != 0) {*ptr -= ",
                    ".": "putchar(*ptr);\n",
-                   ",": "*ptr=getchar();\n",
+                   ",": "*ptr = getch();\n",
                    "[": "while(*ptr){\n",
                    "]": "}\n",
                    "c": "*ptr=0;\n",
