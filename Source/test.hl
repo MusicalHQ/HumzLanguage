@@ -1,14 +1,7 @@
 import everything.hl
 
-var a
-var b
-var c
+list a 5
 
-read_int dir a
-new_line
+list_write_basic a hello
 
-read_int dir b
-new_line
-
-add dir a dir b dir c
-out dir c int
+out_list a str

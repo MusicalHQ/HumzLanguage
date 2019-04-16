@@ -6,7 +6,7 @@ import copy
 import sys
 from optimized_compiler import *
 
-possible_commands = [['jmp',2],['out',3],['set',4],['unt',2],['inc',4],['end_unt',0],['cpy',4],['mve',4],['fwd',0],['bck',0],['plu',0],['loo',0],['end_loo',0],['out_now',1],['inp',2],['set_hidden_memory',1],['var',1]]
+possible_commands = [['list_write_basic',2],['jmp',2],['out',3],['set',4],['unt',2],['inc',4],['end_unt',0],['cpy',4],['mve',4],['fwd',0],['bck',0],['plu',0],['loo',0],['end_loo',0],['out_now',1],['inp',2],['set_hidden_memory',1],['var',1]]
 
 class parse:
     def __init__(self,file,possible_commands,recursion_limit = 1000,import_limit = 100):
@@ -26,7 +26,10 @@ class parse:
         self.functions = self.get_functions(self.raw)
         self.raw = self.functions[0]
         self.functions = self.functions[1]
+
         self.parsed = self.parse(self.raw)
+        self.parsed = self.check_writes(self.parsed)
+
         counter = 0
         while self.has_func(self.parsed) and counter < self.recursion_limit:
             counter += 1
@@ -55,6 +58,25 @@ class parse:
                     parsed[i][e] = variable_addresses[variables.index(parsed[i][e])]
         self.variables = variables
         self.variable_addresses = variable_addresses
+        return parsed
+
+    def check_writes(self,parsed):
+        parsed_temp = []
+        for idx,i in enumerate(parsed[:]):
+            temp = []
+            if i[0] == 'list_write_basic':
+                x = 0
+                for e in i[2]:
+                    temp.append(["list_set",i[1],x,"str",e])
+                    x += 1
+                parsed_temp.append(temp)
+        for temp in parsed_temp:
+            for idx,e in enumerate(parsed):
+                if e[0] == "list_write_basic":
+                    break
+            parsed.remove(e)
+            for i in temp:
+                parsed.insert(idx,i)
         return parsed
 
     def set_hidden_memory(self,parsed):
