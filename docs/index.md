@@ -1,6 +1,13 @@
 # Welcome to the HumzLanguage docs
 
-### Getting Started
+## What is HumzLanguage
+
+HumzLanguage is a programming language that compiles to a slightly modified version of Brainfuck - a famous esoteric programming language. HumzLanguage can be challanging to write, and thus can be quite rewarding. HumzLanguage can be compiled to a binary file using the GCC C compiler (this must be installed seperately) or can be run through the command line.
+
+Currently there is only a windows build for HumzLanguage, but you can simply clone the repository and build it for Mac or Linux using Pyinstaller.
+
+
+## Getting Started
 
 To download the compiler, download the lastest release from https://github.com/humz2k/HumzLanguage/releases. Contained in the zip are a few example programs, and the standard libraries.
 
