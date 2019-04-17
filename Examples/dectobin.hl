@@ -1,0 +1,76 @@
+import everything.hl
+
+var temp_1
+var temp_2
+var temp_3
+var temp_4
+var temp_decimal
+var temp_5
+var temp_6
+var temp_7
+var seven
+
+var space
+set dir space int 32
+
+fnc dectobin decimal output_var {
+
+cpy dir decimal dir temp_decimal
+
+set dir seven int 15
+
+set dir temp_1 int 1
+set dir temp_3 int 2
+set dir temp_5 int 1
+
+unt dir temp_5
+
+set dir temp_2 int 1
+
+unt dir temp_1
+
+pwr dir temp_3 dir temp_2 dir temp_4
+
+if_greater dir temp_4 dir temp_decimal
+set dir temp_1 int 0
+end_if
+
+if_equals dir temp_4 dir temp_decimal
+set dir temp_1 int 0
+inc dir temp_2 int 1
+end_if
+
+inc dir temp_2 int 1
+end_unt
+
+inc dir temp_2 int -2
+
+
+pwr dir temp_3 dir temp_2 dir temp_4
+sub dir temp_decimal dir temp_4 dir temp_6
+cpy dir temp_6 dir temp_decimal
+
+set dir temp_1 int 1
+
+if dir temp_decimal
+set dir temp_5 int 0
+end_if
+
+sub dir seven dir temp_2 dir temp_7
+
+list_set_index output_var dir temp_7 int 1
+
+end_unt
+
+}
+
+var a
+list output 16
+
+read_int dir a
+new_line
+
+dectobin a output
+
+out_list output int
+
