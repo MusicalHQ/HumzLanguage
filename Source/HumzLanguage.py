@@ -6,13 +6,14 @@ import copy
 import sys
 from optimized_compiler import *
 
-possible_commands = [['list_write_basic',2],['jmp',2],['out',3],['set',4],['unt',2],['inc',4],['end_unt',0],['cpy',4],['mve',4],['fwd',0],['bck',0],['plu',0],['loo',0],['end_loo',0],['out_now',1],['inp',2],['set_hidden_memory',1],['var',1]]
+possible_commands = [['bf',1],['list_write_basic',2],['jmp',2],['out',3],['set',4],['unt',2],['inc',4],['end_unt',0],['cpy',4],['mve',4],['fwd',0],['bck',0],['plu',0],['loo',0],['end_loo',0],['out_now',1],['inp',2],['set_hidden_memory',1],['var',1]]
 
 class parse:
     def __init__(self,file,possible_commands,recursion_limit = 1000,import_limit = 100):
         self.recursion_limit = recursion_limit
         self.possible_commands = possible_commands
         self.raw = self.read(file)
+        self.file = file
         self.variables = None
         self.variable_addresses = None
         self.import_limit = import_limit
@@ -160,7 +161,44 @@ class parse:
                 if i[0] == command:
                     break
             for i in range(args):
-                parsed_command.append(raw.pop(0))
+                try:
+                    parsed_command.append(raw.pop(0))
+                except:
+                    print("")
+                    print("Syntax error:")
+                    print("")
+                    function_exists = False
+                    real_arguments = len(parsed_command)-1
+                    req_arguments = 0
+                    for func in self.functions:
+                        if func[0][0] == command:
+                            function_exists = True
+                            req_arguments = len(func[0])-1
+                            break
+                    if not function_exists:
+                        for func in possible_commands:
+                            if func[0] == command:
+                                function_exists = True
+                                req_arguments = func[1]
+                                break
+                    if function_exists:
+                        print("Function",command,"takes",req_arguments,"arguments but",real_arguments,"were given:")
+                        incorrect_line = ""
+                        for cmd in parsed_command:
+                            incorrect_line = incorrect_line + cmd + " "
+                        print("")
+                        print("    " + incorrect_line)
+                    else:
+                        print("Function",command,"doesn't exist")
+                        print("")
+                        print("    Maybe an error in command",parsed[-1][0])
+                        incorrect_line = ""
+                        for cmd in parsed[-1]:
+                            incorrect_line = incorrect_line + cmd + " "
+                        print("")
+                        print("        " + incorrect_line)
+                    print("")
+                    sys.exit("Compiler Stopped")
             parsed.append(parsed_command)
         return parsed
 
@@ -208,8 +246,19 @@ class compiler:
             self.hidden_memory = hidden_memory
         self.possible_commands = possible_commands
 
+    def bf (self,args):
+        self.bf_out = self.bf_out + args[0]
+
     def jmp (self,args):
-        address_type,location = args[0],(int(args[1])+self.hidden_memory)
+        try:
+            address_type,location = args[0],(int(args[1])+self.hidden_memory)
+        except:
+            print("")
+            print("Compiler Error:")
+            print("")
+            print("Variable",args[1],"doesn't exist")
+            print("")
+            sys.exit("Compiler Stopped")
         self.bf_out = self.bf_out + 'rc'
         for i in range(location):
             self.bf_out = self.bf_out + '+'
@@ -367,16 +416,10 @@ if __name__ == "__main__":
             with open(file,'r') as brain_file:
                 brain = brain_file.read()
 
-            try:
-                file = parse(file,possible_commands)
-            except:
-                raise ValueError('Parsing error')
+            file = parse(file,possible_commands)
 
             compiler = compiler(possible_commands,file.hidden_memory)
-            try:
-                compiler.compile_code(file.parsed)
-            except:
-                raise ValueError('Compiler Error')
+            compiler.compile_code(file.parsed)
 
             if out:
                 file_object  = open(name, 'w')

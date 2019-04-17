@@ -1,7 +1,9 @@
 import everything.hl
 
-list a 5
+var a
 
-list_write_basic a hello
+set dir a int 1
 
-out_list a str
+out_list list_1 str
+
+set dir 0 int 1
