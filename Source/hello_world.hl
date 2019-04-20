@@ -1,22 +1,5 @@
 import everything.hl
 
-list hello_world 11
-var a
-
-set dir a int 0
-
-list_set hello_world 0 str h
-list_set hello_world 1 str e
-list_set hello_world 2 str l
-list_set hello_world 3 str l
-list_set hello_world 4 str o
-list_set hello_world 5 int 32
-list_set hello_world 6 str w
-list_set hello_world 7 str o
-list_set hello_world 8 str r
-list_set hello_world 9 str l
-list_set hello_world 10 str d
-
-if dir a
-out_list hello_world str
-end_if
+string a
+# a = string hello_world
+print string a

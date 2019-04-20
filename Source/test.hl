@@ -1,9 +1,23 @@
 import everything.hl
 
-var a
+string message
 
-set dir a int 1
+$ guess_me = 5
+$ done = 1
 
-out_list list_1 str
+unt dir done
+read int guess
 
-set dir 0 int 1
+if_true_@@ guess == guess_me
+# message = correct
+$ done = 0
+end_if
+
+if_true_@@ guess != guess_me
+# message = wrong
+end_if
+
+print string message
+new_line
+
+end_unt

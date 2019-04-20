@@ -35,12 +35,15 @@ class parse:
         while self.has_func(self.parsed) and counter < self.recursion_limit:
             counter += 1
             self.parsed = self.replace_func(self.parsed)
+            self.parsed = self.check_writes(self.parsed)
 
         if self.has_func(self.parsed):
             print("Reached function limit")
             raise ValueError('Reached function in function limit')
 
         self.parsed = self.set_hidden_memory(self.parsed)
+        #for i in self.parsed:
+            #print(i)
         self.parsed = self.get_var_address(self.parsed)
 
     def get_var_address(self,parsed):
@@ -416,10 +419,13 @@ if __name__ == "__main__":
             with open(file,'r') as brain_file:
                 brain = brain_file.read()
 
+            print("Parsing...")
             file = parse(file,possible_commands)
-
+            print("Initializing BF Compiler")
             compiler = compiler(possible_commands,file.hidden_memory)
+            print("Compiling to BF")
             compiler.compile_code(file.parsed)
+            print("Compiled to BF")
 
             if out:
                 file_object  = open(name, 'w')
@@ -432,14 +438,22 @@ if __name__ == "__main__":
             brain = compiler.bf_out
 
             if c_compile:
+                print("Compiling to executable")
                 compiler_bf_exe(brain,name)
+                print("Compiled to executable")
 
             if optimize:
                 brain = BF.optimize_brain(brain)
 
             if run:
                 try:
+                    print("Running BF")
+                    print("------------------------")
+                    print("")
                     BF.run(brain,debug)
+                    print("")
+                    print("------------------------")
+                    print("Finished executable")
                 except:
                     raise ValueError('Run Error')
     elif editor:
