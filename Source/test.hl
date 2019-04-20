@@ -2,22 +2,6 @@ import everything.hl
 
 string message
 
-$ guess_me = 5
-$ done = 1
-
-unt dir done
-read int guess
-
-if_true_@@ guess == guess_me
-# message = correct
-$ done = 0
-end_if
-
-if_true_@@ guess != guess_me
-# message = wrong
-end_if
+# message = "hello how do u do"
 
 print string message
-new_line
-
-end_unt

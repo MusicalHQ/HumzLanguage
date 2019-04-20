@@ -13,6 +13,7 @@ class parse:
         self.recursion_limit = recursion_limit
         self.possible_commands = possible_commands
         self.raw = self.read(file)
+        self.raw = self.combine_quotes(self.raw)
         self.file = file
         self.variables = None
         self.variable_addresses = None
@@ -45,6 +46,29 @@ class parse:
         #for i in self.parsed:
             #print(i)
         self.parsed = self.get_var_address(self.parsed)
+
+    def combine_quotes(self,parsed):
+        x = 0
+        y = 0
+        string_ = False
+        current_string = ""
+        while x < len(parsed):
+            if parsed[x][0] == '"':
+                current_string = parsed[x][1:]
+                string_ = True
+                y = x
+            elif parsed[x][-1] == '"':
+                current_string = current_string + " " + parsed[x][:-1]
+                string_ = False
+                while not y == x:
+                    parsed.pop(x)
+                    x -= 1
+                parsed.pop(x)
+                parsed.insert(x,current_string)
+            elif string_:
+                current_string = current_string + " " + parsed[x]
+            x += 1
+        return parsed
 
     def get_var_address(self,parsed):
         variables = []
@@ -385,7 +409,7 @@ class compiler:
             else:
                 func_to_call()
 
-editor = False
+editor = True
 
 if __name__ == "__main__":
     args = sys.argv[:]
