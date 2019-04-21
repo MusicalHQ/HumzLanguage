@@ -1,0 +1,54 @@
+import better_loops.hl
+
+fnc list_set_$$ name idx index equals value {
+
+list_set name index int value
+
+}
+
+fnc list_set_$# name idx index equals value {
+
+list_set name index str value
+
+}
+
+fnc list_set_@$ name idx index equals value {
+
+list_set_index name dir index int value
+
+}
+
+fnc list_set_@# name idx index equals value {
+
+list_set_index name dir index str value
+
+}
+
+fnc list_set_@@ name idx index equals value {
+
+list_cpy_index name dir index dir value
+
+}
+
+fnc list_get_$ name output equals idx index {
+
+var output
+
+list_get name index dir output
+
+}
+
+fnc list_get_@ name output equals idx index {
+
+var output
+
+list_get_index name dir index dir output
+
+}
+
+fnc list_get_len name output {
+
+list_len name dir output
+
+}
+

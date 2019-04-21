@@ -13,6 +13,10 @@ var _temp_read_list_constant
 var _temp_read_list_index
 var _temp_read_list_bool
 
+var _temp_list_clear
+
+var _,
+
 set dir _list_start int 0
 
 fnc list name length {
@@ -147,6 +151,38 @@ unt dir _temp_list
 inc dir _temp_list int -1
 inc dir _list_index int 1
 out !dir _list_index type
+end_unt
+
+}
+
+fnc printf_list name type {
+
+set dir _, str ,
+set dir _temp_read_list_delete int 8
+set dir _temp_read_list_space int 32
+
+cpy dir name dir _list_index
+cpy !dir name dir _temp_list
+
+unt dir _temp_list
+inc dir _temp_list int -1
+inc dir _list_index int 1
+out !dir _list_index type
+out dir _, str
+end_unt
+
+out dir _temp_read_list_delete str
+out dir _temp_read_list_space str
+
+}
+
+fnc list_clear name {
+
+cpy !dir name dir _temp_list_clear
+
+unt dir _temp_list_clear
+inc dir _temp_list_clear int -1
+list_set_index name dir _temp_list_clear int 0
 end_unt
 
 }

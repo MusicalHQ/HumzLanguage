@@ -1,5 +1,3 @@
 import everything.hl
 
-string a
-# a = string hello_world
-print string a
+print_direct "hello world"

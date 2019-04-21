@@ -24,6 +24,18 @@ var _>
 var _<
 var _!
 
+fnc until_zero var_1 {
+
+unt dir var_1
+
+}
+
+fnc end_until {
+
+end_unt
+
+}
+
 fnc if_true_$@ a operator b {
 
 set dir _@ str @

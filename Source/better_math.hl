@@ -21,6 +21,7 @@ var _*
 var _-
 var _/
 var _%
+var _^
 
 fnc $@ var_1 equals value_1 operator value_2 {
 
@@ -31,6 +32,7 @@ set dir _* str *
 set dir _- str -
 set dir _/ str /
 set dir _% str %
+set dir _^ str ^
 
 cpy dir value_2 dir _temp_math_b
 set dir _temp_math_a int value_1
@@ -58,6 +60,10 @@ if_equals dir _temp_math_operator_short dir _%
 mod dir _temp_math_a dir _temp_math_b dir var_1
 end_if
 
+if_equals dir _temp_math_operator_short dir _^
+pwr dir _temp_math_a dir _temp_math_b dir var_1
+end_if
+
 }
 
 fnc @$ var_1 equals value_1 operator value_2 {
@@ -69,6 +75,7 @@ set dir _* str *
 set dir _- str -
 set dir _/ str /
 set dir _% str %
+set dir _^ str ^
 
 cpy dir value_1 dir _temp_math_a
 set dir _temp_math_b int value_2
@@ -96,6 +103,10 @@ if_equals dir _temp_math_operator_short dir _%
 mod dir _temp_math_a dir _temp_math_b dir var_1
 end_if
 
+if_equals dir _temp_math_operator_short dir _^
+pwr dir _temp_math_a dir _temp_math_b dir var_1
+end_if
+
 }
 
 fnc @@ var_1 equals value_1 operator value_2 {
@@ -107,6 +118,7 @@ set dir _* str *
 set dir _- str -
 set dir _/ str /
 set dir _% str %
+set dir _^ str ^
 
 cpy dir value_1 dir _temp_math_a
 cpy dir value_2 dir _temp_math_b
@@ -132,6 +144,10 @@ end_if
 
 if_equals dir _temp_math_operator_short dir _%
 mod dir _temp_math_a dir _temp_math_b dir var_1
+end_if
+
+if_equals dir _temp_math_operator_short dir _^
+pwr dir _temp_math_a dir _temp_math_b dir var_1
 end_if
 
 }
@@ -146,6 +162,7 @@ set dir _* str *
 set dir _- str -
 set dir _/ str /
 set dir _% str %
+set dir _^ str ^
 
 set dir _temp_math_a int value_1
 set dir _temp_math_b int value_2
@@ -173,6 +190,10 @@ if_equals dir _temp_math_operator_short dir _%
 mod dir _temp_math_a dir _temp_math_b dir var_1
 end_if
 
+if_equals dir _temp_math_operator_short dir _^
+pwr dir _temp_math_a dir _temp_math_b dir var_1
+end_if
+
 }
 
 
@@ -180,6 +201,7 @@ fnc # var_1 equals value {
 
 var var_1
 
+list_clear var_1
 list_write_basic var_1 value
 
 }
@@ -211,7 +233,6 @@ list var_1 32
 
 fnc print type var_1 {
 
-set dir _v str v
 set dir _i str i
 set dir _s str s
 set dir _l str l
@@ -229,8 +250,10 @@ out_list var_1 str
 end_if
 
 if_equals dir _temp_math_type_short dir _l
-out_list var_1 int
+printf_list var_1 int
 end_if
+
+new_line
 
 }
 
@@ -251,6 +274,7 @@ new_line
 end_if
 
 if_equals dir _temp_math_type_short dir _s
+list_clear var_1
 list_read_basic var_1
 end_if
 

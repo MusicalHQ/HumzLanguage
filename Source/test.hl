@@ -1,7 +1,0 @@
-import everything.hl
-
-string message
-
-# message = "hello how do u do"
-
-print string message

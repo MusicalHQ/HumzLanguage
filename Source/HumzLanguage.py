@@ -9,10 +9,10 @@ from optimized_compiler import *
 possible_commands = [['bf',1],['list_write_basic',2],['jmp',2],['out',3],['set',4],['unt',2],['inc',4],['end_unt',0],['cpy',4],['mve',4],['fwd',0],['bck',0],['plu',0],['loo',0],['end_loo',0],['out_now',1],['inp',2],['set_hidden_memory',1],['var',1]]
 
 class parse:
-    def __init__(self,file,possible_commands,recursion_limit = 1000,import_limit = 100):
+    def __init__(self,file,possible_commands,recursion_limit = 1000,import_limit = 100,is_file = True):
         self.recursion_limit = recursion_limit
         self.possible_commands = possible_commands
-        self.raw = self.read(file)
+        self.raw = self.read(file,is_file)
         self.raw = self.combine_quotes(self.raw)
         self.file = file
         self.variables = None
@@ -67,6 +67,11 @@ class parse:
                 parsed.insert(x,current_string)
             elif string_:
                 current_string = current_string + " " + parsed[x]
+            x += 1
+        x = 0
+        while x < len(parsed):
+            if parsed[x][0] == '"' and parsed[x][-1] == '"':
+                parsed[x] = parsed[x][1:-1]
             x += 1
         return parsed
 
@@ -130,10 +135,15 @@ class parse:
                 has_import = True
         return has_import
 
-    def read (self,file):
+    def read (self,file,is_file = True):
         raw = []
-        with open(file,'r') as f:
-            for line in f:
+        if is_file:
+            with open(file,'r') as f:
+                for line in f:
+                    for word in line.split():
+                        raw.append(word)
+        else:
+            for line in file:
                 for word in line.split():
                     raw.append(word)
         return raw
@@ -409,7 +419,7 @@ class compiler:
             else:
                 func_to_call()
 
-editor = True
+editor = False
 
 if __name__ == "__main__":
     args = sys.argv[:]
@@ -444,7 +454,7 @@ if __name__ == "__main__":
                 brain = brain_file.read()
 
             print("Parsing...")
-            file = parse(file,possible_commands)
+            file = parse(file,possible_commands,is_file = True)
             print("Initializing BF Compiler")
             compiler = compiler(possible_commands,file.hidden_memory)
             print("Compiling to BF")
@@ -477,7 +487,7 @@ if __name__ == "__main__":
                     BF.run(brain,debug)
                     print("")
                     print("------------------------")
-                    print("Finished executable")
+                    print("Finished")
                 except:
                     raise ValueError('Run Error')
     elif editor:
@@ -510,4 +520,43 @@ if __name__ == "__main__":
             raise ValueError('Run Error')
 
     else:
-        print("No args passed - see docs for help")
+        print("Interactive Enviornment")
+        print("------------------------")
+        print("")
+        new_input = []
+        whole_program = []
+        while True:
+            new_input_raw = input()
+            if new_input_raw == "exit":
+                break
+            new_input.append(new_input_raw)
+            if new_input_raw == "":
+                old_program = whole_program
+                whole_program = whole_program + new_input
+                new_input = []
+                try:
+                    file = parse(whole_program,possible_commands,is_file = False)
+                    compiler_interactive = compiler(possible_commands,file.hidden_memory)
+                    compiler_interactive.compile_code(file.parsed)
+                    brain = compiler_interactive.bf_out
+                    brain = BF.optimize_brain(brain)
+                    print(" ---- Executing")
+                    BF.run(brain,False)
+                    print(" ---- Done")
+                    print("")
+                    to_remove = []
+                    has_print = False
+                    for command in whole_program:
+                        if len(command.split()) > 1:
+                            if command.split()[0] == "print" or command.split()[0] == "out" or command.split()[0] == "out_list" or command.split()[0] == "printf_list" or command.split()[0] == "print_direct":
+                                to_remove.append(command)
+                                has_print = True
+                    for command in to_remove:
+                        whole_program.remove(command)
+                    if has_print:
+                        print("")
+                except:
+                    print("------------------------")
+                    print("ERROR")
+                    print("------------------------")
+                    whole_program = old_program
