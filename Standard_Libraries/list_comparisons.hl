@@ -1,0 +1,215 @@
+import better_lists.hl
+
+string _comparison_list_1
+string _comparison_list_2
+list _comparison_operator 2
+var _comparison_operator_short
+var _comparison_looper
+var _comparison_temp_1
+var _comparison_temp_2
+
+string _print
+
+fnc print_direct to_print {
+
+# _print = to_print
+print string _print
+
+}
+
+fnc if_list_@@ chars_to_compare list_1 operator list_2 {
+
+@ _comparison_list_1 = list_1
+@ _comparison_list_2 = list_2
+
+set dir _= str =
+set dir _! str !
+
+list_write_basic _comparison_operator operator
+list_get _comparison_operator 0 dir _comparison_operator_short
+
+if_true_@@ _comparison_operator_short == _=
+$ _comparison_bool = 1
+$ _comparison_default = 0
+end_if
+
+if_true_@@ _comparison_operator_short == _!
+$ _comparison_bool = 0
+$ _comparison_default = 1
+end_if
+
+@ _comparison = _comparison_default
+
+$ _comparison_looper = chars_to_compare
+
+until_zero _comparison_looper
+
+@$ _comparison_looper = _comparison_looper - 1
+
+list_get_@ _comparison_list_1 _comparison_temp_1 = index _comparison_looper
+list_get_@ _comparison_list_2 _comparison_temp_2 = index _comparison_looper
+
+if_true_@@ _comparison_temp_1 != _comparison_temp_2
+@ _comparison = _comparison_bool
+$ _comparison_looper = 0
+end_if
+
+end_until
+
+if dir _comparison
+
+}
+
+
+fnc if_list_## chars_to_compare list_1 operator list_2 {
+
+# _comparison_list_1 = list_1
+# _comparison_list_2 = list_2
+
+set dir _= str =
+set dir _! str !
+
+list_write_basic _comparison_operator operator
+list_get _comparison_operator 0 dir _comparison_operator_short
+
+if_true_@@ _comparison_operator_short == _=
+$ _comparison_bool = 1
+$ _comparison_default = 0
+end_if
+
+if_true_@@ _comparison_operator_short == _!
+$ _comparison_bool = 0
+$ _comparison_default = 1
+end_if
+
+@ _comparison = _comparison_default
+
+$ _comparison_looper = chars_to_compare
+
+until_zero _comparison_looper
+
+@$ _comparison_looper = _comparison_looper - 1
+
+list_get_@ _comparison_list_1 _comparison_temp_1 = index _comparison_looper
+list_get_@ _comparison_list_2 _comparison_temp_2 = index _comparison_looper
+
+if_true_@@ _comparison_temp_1 != _comparison_temp_2
+@ _comparison = _comparison_bool
+$ _comparison_looper = 0
+end_if
+
+end_until
+
+if dir _comparison
+
+}
+
+fnc if_list_@# chars_to_compare list_1 operator list_2 {
+
+@ _comparison_list_1 = list_1
+# _comparison_list_2 = list_2
+
+set dir _= str =
+set dir _! str !
+
+list_write_basic _comparison_operator operator
+list_get _comparison_operator 0 dir _comparison_operator_short
+
+if_true_@@ _comparison_operator_short == _=
+$ _comparison_bool = 1
+$ _comparison_default = 0
+end_if
+
+if_true_@@ _comparison_operator_short == _!
+$ _comparison_bool = 0
+$ _comparison_default = 1
+end_if
+
+@ _comparison = _comparison_default
+
+$ _comparison_looper = chars_to_compare
+
+until_zero _comparison_looper
+
+@$ _comparison_looper = _comparison_looper - 1
+
+list_get_@ _comparison_list_1 _comparison_temp_1 = index _comparison_looper
+list_get_@ _comparison_list_2 _comparison_temp_2 = index _comparison_looper
+
+if_true_@@ _comparison_temp_1 != _comparison_temp_2
+@ _comparison = _comparison_bool
+$ _comparison_looper = 0
+end_if
+
+end_until
+
+if dir _comparison
+
+}
+
+fnc if_list_#@ chars_to_compare list_1 operator list_2 {
+
+# _comparison_list_1 = list_1
+@ _comparison_list_2 = list_2
+
+set dir _= str =
+set dir _! str !
+
+list_write_basic _comparison_operator operator
+list_get _comparison_operator 0 dir _comparison_operator_short
+
+if_true_@@ _comparison_operator_short == _=
+$ _comparison_bool = 1
+$ _comparison_default = 0
+end_if
+
+if_true_@@ _comparison_operator_short == _!
+$ _comparison_bool = 0
+$ _comparison_default = 1
+end_if
+
+@ _comparison = _comparison_default
+
+$ _comparison_looper = chars_to_compare
+
+until_zero _comparison_looper
+
+@$ _comparison_looper = _comparison_looper - 1
+
+list_get_@ _comparison_list_1 _comparison_temp_1 = index _comparison_looper
+list_get_@ _comparison_list_2 _comparison_temp_2 = index _comparison_looper
+
+if_true_@@ _comparison_temp_1 != _comparison_temp_2
+@ _comparison = _comparison_bool
+$ _comparison_looper = 0
+end_if
+
+end_until
+
+if dir _comparison
+
+}
+
+fnc if_string_@@ chars_to_compare list_1 operator list_2 {
+
+if_list_@@ chars_to_compare list_1 operator list_2
+
+}
+
+fnc if_string_@# chars_to_compare list_1 operator list_2 {
+
+if_list_@# chars_to_compare list_1 operator list_2
+
+}
+
+fnc if_string_#@ chars_to_compare list_1 operator list_2 {
+
+if_list_#@ chars_to_compare list_1 operator list_2
+
+}
+
+fnc if_string_## chars_to_compare list_1 operator list_2 {
+
+if_list_## chars_to_compare list_1 operator list_2
+
+}

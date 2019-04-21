@@ -1,0 +1,233 @@
+import better_math.hl
+
+list _temp_loops_operator 2
+list _temp_loops_types 2
+
+var _temp_loops_operator_short
+
+var _temp_loops_types_1
+var _temp_loops_types_2
+
+var _temp_loops_a
+var _temp_loops_b
+
+var _temp_loops_if
+var _temp_loops_if_1
+var _temp_loops_if_2
+var _temp_loops_if_3
+
+var _@
+var _$
+
+var _=
+var _>
+var _<
+var _!
+
+fnc until_zero var_1 {
+
+unt dir var_1
+
+}
+
+fnc end_until {
+
+end_unt
+
+}
+
+fnc if_true_$@ a operator b {
+
+set dir _@ str @
+set dir _$ str $
+set dir _= str =
+set dir _> str >
+set dir _< str <
+set dir _! str !
+
+list_write_basic _temp_loops_operator operator
+list_get _temp_loops_operator 0 dir _temp_loops_operator_short
+
+set dir _temp_loops_a int a
+cpy dir b dir _temp_loops_b
+
+if_equals dir _temp_loops_operator_short dir _=
+sub dir _temp_loops_a dir _temp_loops_b dir _temp_loops_if_1
+sub dir _temp_loops_b dir _temp_loops_a dir _temp_loops_if_2
+add dir _temp_loops_if_1 dir _temp_loops_if_2 dir _temp_loops_if_3
+set dir _temp_loops_if int 1
+unt dir _temp_loops_if_3
+set dir _temp_loops_if int 0
+set dir _temp_loops_if_3 int 0
+end_unt
+end_if
+
+if_equals dir _temp_loops_operator_short dir _!
+sub dir _temp_loops_a dir _temp_loops_b dir _temp_loops_if_1
+sub dir _temp_loops_b dir _temp_loops_a dir _temp_loops_if_2
+add dir _temp_loops_if_1 dir _temp_loops_if_2 dir _temp_loops_if
+end_if
+
+if_equals dir _temp_loops_operator_short dir _>
+sub dir _temp_loops_a dir _temp_loops_b dir _temp_loops_if_1
+sub dir _temp_loops_b dir _temp_loops_a dir _temp_loops_if_2
+sub dir _temp_loops_if_1 dir _temp_loops_if_2 dir _temp_loops_if
+end_if
+
+if_equals dir _temp_loops_operator_short dir _<
+sub dir _temp_loops_b dir _temp_loops_a dir _temp_loops_if_1
+sub dir _temp_loops_a dir _temp_loops_b dir _temp_loops_if_2
+sub dir _temp_loops_if_1 dir _temp_loops_if_2 dir _temp_loops_if
+end_if
+
+unt dir _temp_loops_if
+set dir _temp_loops_if int 0
+
+}
+
+fnc if_true_@$ a operator b {
+
+set dir _@ str @
+set dir _$ str $
+set dir _= str =
+set dir _> str >
+set dir _< str <
+set dir _! str !
+
+list_write_basic _temp_loops_operator operator
+list_get _temp_loops_operator 0 dir _temp_loops_operator_short
+
+cpy dir a dir _temp_loops_a
+set dir _temp_loops_b int b
+
+if_equals dir _temp_loops_operator_short dir _=
+sub dir _temp_loops_a dir _temp_loops_b dir _temp_loops_if_1
+sub dir _temp_loops_b dir _temp_loops_a dir _temp_loops_if_2
+add dir _temp_loops_if_1 dir _temp_loops_if_2 dir _temp_loops_if_3
+set dir _temp_loops_if int 1
+unt dir _temp_loops_if_3
+set dir _temp_loops_if int 0
+set dir _temp_loops_if_3 int 0
+end_unt
+end_if
+
+if_equals dir _temp_loops_operator_short dir _!
+sub dir _temp_loops_a dir _temp_loops_b dir _temp_loops_if_1
+sub dir _temp_loops_b dir _temp_loops_a dir _temp_loops_if_2
+add dir _temp_loops_if_1 dir _temp_loops_if_2 dir _temp_loops_if
+end_if
+
+if_equals dir _temp_loops_operator_short dir _>
+sub dir _temp_loops_a dir _temp_loops_b dir _temp_loops_if_1
+sub dir _temp_loops_b dir _temp_loops_a dir _temp_loops_if_2
+sub dir _temp_loops_if_1 dir _temp_loops_if_2 dir _temp_loops_if
+end_if
+
+if_equals dir _temp_loops_operator_short dir _<
+sub dir _temp_loops_b dir _temp_loops_a dir _temp_loops_if_1
+sub dir _temp_loops_a dir _temp_loops_b dir _temp_loops_if_2
+sub dir _temp_loops_if_1 dir _temp_loops_if_2 dir _temp_loops_if
+end_if
+
+unt dir _temp_loops_if
+set dir _temp_loops_if int 0
+
+}
+
+fnc if_true_@@ a operator b {
+
+set dir _@ str @
+set dir _$ str $
+set dir _= str =
+set dir _> str >
+set dir _< str <
+set dir _! str !
+
+list_write_basic _temp_loops_operator operator
+list_get _temp_loops_operator 0 dir _temp_loops_operator_short
+
+cpy dir a dir _temp_loops_a
+cpy dir b dir _temp_loops_b
+
+if_equals dir _temp_loops_operator_short dir _=
+sub dir _temp_loops_a dir _temp_loops_b dir _temp_loops_if_1
+sub dir _temp_loops_b dir _temp_loops_a dir _temp_loops_if_2
+add dir _temp_loops_if_1 dir _temp_loops_if_2 dir _temp_loops_if_3
+set dir _temp_loops_if int 1
+unt dir _temp_loops_if_3
+set dir _temp_loops_if int 0
+set dir _temp_loops_if_3 int 0
+end_unt
+end_if
+
+if_equals dir _temp_loops_operator_short dir _!
+sub dir _temp_loops_a dir _temp_loops_b dir _temp_loops_if_1
+sub dir _temp_loops_b dir _temp_loops_a dir _temp_loops_if_2
+add dir _temp_loops_if_1 dir _temp_loops_if_2 dir _temp_loops_if
+end_if
+
+if_equals dir _temp_loops_operator_short dir _>
+sub dir _temp_loops_a dir _temp_loops_b dir _temp_loops_if_1
+sub dir _temp_loops_b dir _temp_loops_a dir _temp_loops_if_2
+sub dir _temp_loops_if_1 dir _temp_loops_if_2 dir _temp_loops_if
+end_if
+
+if_equals dir _temp_loops_operator_short dir _<
+sub dir _temp_loops_b dir _temp_loops_a dir _temp_loops_if_1
+sub dir _temp_loops_a dir _temp_loops_b dir _temp_loops_if_2
+sub dir _temp_loops_if_1 dir _temp_loops_if_2 dir _temp_loops_if
+end_if
+
+unt dir _temp_loops_if
+set dir _temp_loops_if int 0
+
+}
+
+fnc if_true_$$ a operator b {
+
+set dir _@ str @
+set dir _$ str $
+set dir _= str =
+set dir _> str >
+set dir _< str <
+set dir _! str !
+
+list_write_basic _temp_loops_operator operator
+list_get _temp_loops_operator 0 dir _temp_loops_operator_short
+
+set dir _temp_loops_a int a
+set dir _temp_loops_b int b
+
+if_equals dir _temp_loops_operator_short dir _=
+sub dir _temp_loops_a dir _temp_loops_b dir _temp_loops_if_1
+sub dir _temp_loops_b dir _temp_loops_a dir _temp_loops_if_2
+add dir _temp_loops_if_1 dir _temp_loops_if_2 dir _temp_loops_if_3
+set dir _temp_loops_if int 1
+unt dir _temp_loops_if_3
+set dir _temp_loops_if int 0
+set dir _temp_loops_if_3 int 0
+end_unt
+end_if
+
+if_equals dir _temp_loops_operator_short dir _!
+sub dir _temp_loops_a dir _temp_loops_b dir _temp_loops_if_1
+sub dir _temp_loops_b dir _temp_loops_a dir _temp_loops_if_2
+add dir _temp_loops_if_1 dir _temp_loops_if_2 dir _temp_loops_if
+end_if
+
+if_equals dir _temp_loops_operator_short dir _>
+sub dir _temp_loops_a dir _temp_loops_b dir _temp_loops_if_1
+sub dir _temp_loops_b dir _temp_loops_a dir _temp_loops_if_2
+sub dir _temp_loops_if_1 dir _temp_loops_if_2 dir _temp_loops_if
+end_if
+
+if_equals dir _temp_loops_operator_short dir _<
+sub dir _temp_loops_b dir _temp_loops_a dir _temp_loops_if_1
+sub dir _temp_loops_a dir _temp_loops_b dir _temp_loops_if_2
+sub dir _temp_loops_if_1 dir _temp_loops_if_2 dir _temp_loops_if
+end_if
+
+unt dir _temp_loops_if
+set dir _temp_loops_if int 0
+
+}

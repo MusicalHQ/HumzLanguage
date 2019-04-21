@@ -1,0 +1,281 @@
+import reading.hl
+
+list _temp_math_type 8
+list _temp_math_type_1 8
+list _temp_math_operator 1
+
+var _temp_math_type_short
+var _temp_math_type_short_1
+var _temp_math_operator_short
+
+var _temp_math_a
+var _temp_math_b
+
+var _v
+var _i
+var _s
+var _l
+
+var _+
+var _*
+var _-
+var _/
+var _%
+var _^
+
+fnc $@ var_1 equals value_1 operator value_2 {
+
+var var_1
+
+set dir _+ str +
+set dir _* str *
+set dir _- str -
+set dir _/ str /
+set dir _% str %
+set dir _^ str ^
+
+cpy dir value_2 dir _temp_math_b
+set dir _temp_math_a int value_1
+
+list_write_basic _temp_math_operator operator
+list_get _temp_math_operator 0 dir _temp_math_operator_short
+
+if_equals dir _temp_math_operator_short dir _+
+add dir _temp_math_a dir _temp_math_b dir var_1
+end_if
+
+if_equals dir _temp_math_operator_short dir _-
+sub dir _temp_math_a dir _temp_math_b dir var_1
+end_if
+
+if_equals dir _temp_math_operator_short dir _*
+mul dir _temp_math_a dir _temp_math_b dir var_1
+end_if
+
+if_equals dir _temp_math_operator_short dir _/
+div dir _temp_math_a dir _temp_math_b dir var_1
+end_if
+
+if_equals dir _temp_math_operator_short dir _%
+mod dir _temp_math_a dir _temp_math_b dir var_1
+end_if
+
+if_equals dir _temp_math_operator_short dir _^
+pwr dir _temp_math_a dir _temp_math_b dir var_1
+end_if
+
+}
+
+fnc @$ var_1 equals value_1 operator value_2 {
+
+var var_1
+
+set dir _+ str +
+set dir _* str *
+set dir _- str -
+set dir _/ str /
+set dir _% str %
+set dir _^ str ^
+
+cpy dir value_1 dir _temp_math_a
+set dir _temp_math_b int value_2
+
+list_write_basic _temp_math_operator operator
+list_get _temp_math_operator 0 dir _temp_math_operator_short
+
+if_equals dir _temp_math_operator_short dir _+
+add dir _temp_math_a dir _temp_math_b dir var_1
+end_if
+
+if_equals dir _temp_math_operator_short dir _-
+sub dir _temp_math_a dir _temp_math_b dir var_1
+end_if
+
+if_equals dir _temp_math_operator_short dir _*
+mul dir _temp_math_a dir _temp_math_b dir var_1
+end_if
+
+if_equals dir _temp_math_operator_short dir _/
+div dir _temp_math_a dir _temp_math_b dir var_1
+end_if
+
+if_equals dir _temp_math_operator_short dir _%
+mod dir _temp_math_a dir _temp_math_b dir var_1
+end_if
+
+if_equals dir _temp_math_operator_short dir _^
+pwr dir _temp_math_a dir _temp_math_b dir var_1
+end_if
+
+}
+
+fnc @@ var_1 equals value_1 operator value_2 {
+
+var var_1
+
+set dir _+ str +
+set dir _* str *
+set dir _- str -
+set dir _/ str /
+set dir _% str %
+set dir _^ str ^
+
+cpy dir value_1 dir _temp_math_a
+cpy dir value_2 dir _temp_math_b
+
+list_write_basic _temp_math_operator operator
+list_get _temp_math_operator 0 dir _temp_math_operator_short
+
+if_equals dir _temp_math_operator_short dir _+
+add dir _temp_math_a dir _temp_math_b dir var_1
+end_if
+
+if_equals dir _temp_math_operator_short dir _-
+sub dir _temp_math_a dir _temp_math_b dir var_1
+end_if
+
+if_equals dir _temp_math_operator_short dir _*
+mul dir _temp_math_a dir _temp_math_b dir var_1
+end_if
+
+if_equals dir _temp_math_operator_short dir _/
+div dir _temp_math_a dir _temp_math_b dir var_1
+end_if
+
+if_equals dir _temp_math_operator_short dir _%
+mod dir _temp_math_a dir _temp_math_b dir var_1
+end_if
+
+if_equals dir _temp_math_operator_short dir _^
+pwr dir _temp_math_a dir _temp_math_b dir var_1
+end_if
+
+}
+
+
+fnc $$ var_1 equals value_1 operator value_2 {
+
+var var_1
+
+set dir _+ str +
+set dir _* str *
+set dir _- str -
+set dir _/ str /
+set dir _% str %
+set dir _^ str ^
+
+set dir _temp_math_a int value_1
+set dir _temp_math_b int value_2
+
+list_write_basic _temp_math_operator operator
+list_get _temp_math_operator 0 dir _temp_math_operator_short
+
+if_equals dir _temp_math_operator_short dir _+
+add dir _temp_math_a dir _temp_math_b dir var_1
+end_if
+
+if_equals dir _temp_math_operator_short dir _-
+sub dir _temp_math_a dir _temp_math_b dir var_1
+end_if
+
+if_equals dir _temp_math_operator_short dir _*
+mul dir _temp_math_a dir _temp_math_b dir var_1
+end_if
+
+if_equals dir _temp_math_operator_short dir _/
+div dir _temp_math_a dir _temp_math_b dir var_1
+end_if
+
+if_equals dir _temp_math_operator_short dir _%
+mod dir _temp_math_a dir _temp_math_b dir var_1
+end_if
+
+if_equals dir _temp_math_operator_short dir _^
+pwr dir _temp_math_a dir _temp_math_b dir var_1
+end_if
+
+}
+
+
+fnc # var_1 equals value {
+
+var var_1
+
+list_clear var_1
+list_write_basic var_1 value
+
+}
+
+fnc @ var_1 equals value {
+
+var var_1
+var value
+
+cpy dir value dir var_1
+
+}
+
+fnc $ var_1 equals value {
+
+var var_1
+set dir var_1 int value
+
+}
+
+
+
+fnc string var_1 {
+
+list var_1 32
+
+}
+
+
+fnc print type var_1 {
+
+set dir _i str i
+set dir _s str s
+set dir _l str l
+
+list_write_basic _temp_math_type type
+
+list_get _temp_math_type 0 dir _temp_math_type_short
+
+if_equals dir _temp_math_type_short dir _i
+out dir var_1 int
+end_if
+
+if_equals dir _temp_math_type_short dir _s
+out_list var_1 str
+end_if
+
+if_equals dir _temp_math_type_short dir _l
+printf_list var_1 int
+end_if
+
+new_line
+
+}
+
+fnc read type var_1 {
+
+var var_1
+
+set dir _i str i
+set dir _s str s
+
+list_write_basic _temp_math_type type
+
+list_get _temp_math_type 0 dir _temp_math_type_short
+
+if_equals dir _temp_math_type_short dir _i
+read_int dir var_1
+new_line
+end_if
+
+if_equals dir _temp_math_type_short dir _s
+list_clear var_1
+list_read_basic var_1
+end_if
+
+}
