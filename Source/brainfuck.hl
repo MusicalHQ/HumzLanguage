@@ -1,0 +1,120 @@
+import everything.hl
+
+list brainfuck 100
+list memory 16
+list_write_basic brainfuck +[-[<<[+[--->]-[<<<]]]>>>-]>-.---.>..>.<<<<-.<+.>>>>>.>.<<.<-.
+print string brainfuck
+new_line
+
+$ done = 1
+$ counter = 0
+$ memory_pointer = 0
+$ current_memory = 0
+
+var current_instruction
+
+var +
+var -
+var <
+var >
+var [
+var ]
+var .
+var ,
+
+set dir + str +
+set dir - str -
+set dir < str <
+set dir > str >
+set dir [ str [
+set dir ] str ]
+set dir . str .
+set dir , str ,
+
+until_zero done
+
+list_get_@ memory current_memory == index memory_pointer
+list_get_@ brainfuck current_instruction == index counter
+
+if_true_@@ current_instruction == +
+@$ current_memory = current_memory + 1
+list_set_@@ memory index memory_pointer = current_memory
+end_if
+
+if_true_@@ current_instruction == -
+@$ current_memory = current_memory - 1
+list_set_@@ memory index memory_pointer = current_memory
+end_if
+
+if_true_@@ current_instruction == >
+@$ memory_pointer = memory_pointer + 1
+end_if
+
+if_true_@@ current_instruction == <
+@$ memory_pointer = memory_pointer - 1
+end_if
+
+if_true_@@ current_instruction == .
+out dir current_memory str
+end_if
+
+if_true_@@ current_instruction == ,
+inp dir current_memory
+list_set_@@ memory index memory_pointer = current_memory
+end_if
+
+if_true_@@ current_instruction == ]
+$ loop_counter = 1
+var current_memory_loops
+
+if_true_@$ current_memory != 0
+
+until_zero loop_counter
+@$ memory_pointer = memory_pointer - 1
+list_get_@ memory current_memory_loops = index memory_pointer
+if_true_@@ current_memory_loops == ]
+@$ loop_counter = loop_counter + 1
+end_if
+
+if_true_@@ current_memory_loops == [
+@$ loop_counter = loop_counter - 1
+end_if
+
+end_until
+
+end_if
+
+end_if
+
+if_true_@@ current_instruction == [
+
+$ loop_counter = 1
+var current_memory_loops
+
+if_true_@$ current_memory == 0
+
+until_zero loop_counter
+@$ memory_pointer = memory_pointer + 1
+list_get_@ memory current_memory_loops = index memory_pointer
+if_true_@@ current_memory_loops == ]
+@$ loop_counter = loop_counter - 1
+end_if
+if_true_@@ current_memory_loops == [
+@$ loop_counter = loop_counter + 1
+end_if
+end_until
+
+end_if
+
+end_if
+
+if_true_@$ counter == 100
+$ done = 0
+end_if
+
+@$ counter = counter + 1
+
+end_until
+
+new_line
+print list memory

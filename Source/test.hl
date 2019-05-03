@@ -1,0 +1,8 @@
+var a
+var b
+var c
+
+set dir a int 1
+if_not_zero dir a
+out dir a int
+end_if

@@ -6,10 +6,11 @@ import copy
 import sys
 from optimized_compiler import *
 
-possible_commands = [['bf',1],['list_write_basic',2],['jmp',2],['out',3],['set',4],['unt',2],['inc',4],['end_unt',0],['cpy',4],['mve',4],['fwd',0],['bck',0],['plu',0],['loo',0],['end_loo',0],['out_now',1],['inp',2],['set_hidden_memory',1],['var',1]]
+possible_commands = [['list',2],['asg',3],['if',3],['if_true',5],['if_zero',2],['end_if',0],['if_not_zero',2],['mul',6],['sub',6],['add',6],['bf',1],['list_write_basic',2],['jmp',2],['out',3],['set',4],['unt',2],['inc',4],['end_unt',0],['cpy',4],['mve',4],['fwd',0],['bck',0],['plu',0],['loo',0],['end_loo',0],['out_now',1],['inp',2],['set_hidden_memory',1],['var',1]]
 
 class parse:
     def __init__(self,file,possible_commands,recursion_limit = 1000,import_limit = 100,is_file = True):
+        global editor
         self.recursion_limit = recursion_limit
         self.possible_commands = possible_commands
         self.raw = self.read(file,is_file)
@@ -19,8 +20,10 @@ class parse:
         self.variable_addresses = None
         self.import_limit = import_limit
         self.imported = []
+        self.ints = []
+        self.lists = []
         counter = 0
-        self.hidden_memory = 0
+        self.hidden_memory = 20
         while self.has_import(self.raw) and counter < self.import_limit:
             counter += 1
             self.raw = self.imports(self.raw)
@@ -28,7 +31,8 @@ class parse:
         self.functions = self.get_functions(self.raw)
         self.raw = self.functions[0]
         self.functions = self.functions[1]
-
+        print("raw",self.raw)
+        self.raw = self.assigns(self.raw)
         self.parsed = self.parse(self.raw)
         self.parsed = self.check_writes(self.parsed)
 
@@ -46,6 +50,19 @@ class parse:
         #for i in self.parsed:
             #print(i)
         self.parsed = self.get_var_address(self.parsed)
+        if editor:
+            for idx,variable in enumerate(self.variables):
+                print(variable + ':',self.variable_addresses[idx])
+
+    def assigns(self,parsed):
+        x = 0
+        print(parsed)
+        while x < len(parsed):
+            if parsed[x] == "=":
+                parsed.insert(x-1,'asg')
+                x += 1
+            x += 1
+        return parsed
 
     def combine_quotes(self,parsed):
         x = 0
@@ -54,11 +71,11 @@ class parse:
         current_string = ""
         while x < len(parsed):
             if parsed[x][0] == '"':
-                current_string = parsed[x][1:]
+                current_string = parsed[x]
                 string_ = True
                 y = x
             elif parsed[x][-1] == '"':
-                current_string = current_string + " " + parsed[x][:-1]
+                current_string = current_string + " " + parsed[x]
                 string_ = False
                 while not y == x:
                     parsed.pop(x)
@@ -71,7 +88,7 @@ class parse:
         x = 0
         while x < len(parsed):
             if parsed[x][0] == '"' and parsed[x][-1] == '"':
-                parsed[x] = parsed[x][1:-1]
+                parsed[x] = parsed[x]
             x += 1
         return parsed
 
@@ -82,13 +99,17 @@ class parse:
             if i[0] == 'var':
                 variables.append(i[1])
                 parsed.remove(i)
+                self.ints.append(i[1])
+            if i[0] == 'list':
+                variables.append(i[1])
+                self.lists.append(i[1])
         for i in variables:
             variable_addresses.append(-self.hidden_memory)
             self.hidden_memory += 1
-        for i in range(len(parsed)):
-            for e in range(len(parsed[i])):
-                if parsed[i][e] in variables and not (parsed[i][e-1] == 'int' or parsed[i][e-1] == 'str'):
-                    parsed[i][e] = variable_addresses[variables.index(parsed[i][e])]
+        #for i in range(len(parsed)):
+        #    for e in range(len(parsed[i])):
+        #        if parsed[i][e] in variables and not (parsed[i][e-1] == 'int' or parsed[i][e-1] == 'str'):
+        #            parsed[i][e] = variable_addresses[variables.index(parsed[i][e])]
         self.variables = variables
         self.variable_addresses = variable_addresses
         return parsed
@@ -193,7 +214,7 @@ class parse:
             parsed_command = []
             command = raw.pop(0)
             parsed_command.append(command)
-            for i in self.possible_commands:
+            for idx,i in enumerate(self.possible_commands):
                 args = i[1]
                 if i[0] == command:
                     break
@@ -275,18 +296,32 @@ class parse:
 
 
 class compiler:
-    def __init__(self,possible_commands,hidden_memory = 20):
+    def __init__(self,possible_commands,parser):
         self.bf_out = ''
         self.untils = []
-        self.hidden_memory = 20
-        if hidden_memory > self.hidden_memory:
-            self.hidden_memory = hidden_memory
+        self.hidden_memory = parser.hidden_memory
         self.possible_commands = possible_commands
+        self.variables,self.variable_addresses = parser.variables,parser.variable_addresses
+        self.ints,self.lists = parser.ints,parser.lists
+
+    def replace_func (self,args):
+        x = 0
+        while x < len(args):
+            if args[x] in self.variables:
+                if x > 0:
+                    if not args[x-1] == "int" and not args[x-1] == "str":
+                        args[x] = self.variable_addresses[self.variables.index(args[x])]
+                else:
+                    args[x] = self.variable_addresses[self.variables.index(args[x])]
+            x += 1
+        return args
 
     def bf (self,args):
+        args = self.replace_func(args)
         self.bf_out = self.bf_out + args[0]
 
     def jmp (self,args):
+        args = self.replace_func(args)
         try:
             address_type,location = args[0],(int(args[1])+self.hidden_memory)
         except:
@@ -306,11 +341,13 @@ class compiler:
                 self.bf_out = self.bf_out + '>'
 
     def inp (self,args):
+        args = self.replace_func(args)
         address_type,location = args[0],args[1]
         self.jmp([address_type,location])
         self.bf_out = self.bf_out + ','
 
     def set (self,args):
+        args = self.replace_func(args)
         address_type,location = args[0],args[1]
         data_type,value = args[2],args[3]
         self.jmp([address_type,location])
@@ -323,6 +360,7 @@ class compiler:
             self.bf_out = self.bf_out + '+'
 
     def out (self,args):
+        args = self.replace_func(args)
         address_type,location,data_type = args[0],args[1],args[2]
         self.jmp([address_type,location])
         if data_type == 'int':
@@ -331,6 +369,7 @@ class compiler:
             self.bf_out = self.bf_out + '.'
 
     def unt (self,args):
+        args = self.replace_func(args)
         self.jmp(args)
         self.untils.append(args)
         self.bf_out = self.bf_out + '['
@@ -341,6 +380,7 @@ class compiler:
         self.bf_out = self.bf_out + ']'
 
     def inc (self,args):
+        args = self.replace_func(args)
         address_type,location,data_type,value = args[0],args[1],args[2],args[3]
         self.jmp([address_type,location])
         if data_type == 'str':
@@ -355,6 +395,7 @@ class compiler:
         #self.bf_out = self.bf_out + 'a' + str(value) + 'b'
 
     def cpy (self,args):
+        args = self.replace_func(args)
         address_type_1,location_1,address_type_2,location_2 = args[0],args[1],args[2],args[3]
         address_type_3,location_3 = 'dir','-1'
         self.set([address_type_3,location_3,'int',0])
@@ -370,6 +411,7 @@ class compiler:
         self.end_unt()
 
     def mve (self,args):
+        args = self.replace_func(args)
         address_type_1,location_1,address_type_2,location_2 = args[0],args[1],args[2],args[3]
         address_type_3,location_3 = 'dir','-1'
         self.set([address_type_2,location_2,'int',0])
@@ -397,6 +439,7 @@ class compiler:
         self.bf_out = self.bf_out + ']'
 
     def out_now (self,args):
+        args = self.replace_func(args)
         data_type = args[0]
         self.bf_out = self.bf_out + '.'
         if data_type == 'int':
@@ -404,7 +447,213 @@ class compiler:
         elif data_type == 'str':
             self.bf_out = self.bf_out + '.'
 
+    def add (self,args):
+        args = self.replace_func(args)
+        address_type_1,location_1,address_type_2,location_2 = args[0],args[1],args[2],args[3]
+        output_address_type,output_location = args[4],args[5]
+        self.cpy([address_type_1,location_1,'dir','-2'])
+        self.cpy([address_type_2,location_2,output_address_type,output_location])
+        self.unt(['dir','-2'])
+        self.inc(['dir','-2','int','-1'])
+        self.inc([output_address_type,output_location,'int','1'])
+        self.end_unt()
+
+    def sub (self,args):
+        args = self.replace_func(args)
+        address_type_1,location_1,address_type_2,location_2 = args[0],args[1],args[2],args[3]
+        output_address_type,output_location = args[4],args[5]
+        self.cpy([address_type_1,location_1,output_address_type,output_location])
+        self.cpy([address_type_2,location_2,'dir','-2'])
+        self.unt(['dir','-2'])
+        self.inc(['dir','-2','int','-1'])
+        self.inc([output_address_type,output_location,'int','-1'])
+        self.end_unt()
+
+    def mul (self,args):
+        args = self.replace_func(args)
+        address_type_1,location_1,address_type_2,location_2 = args[0],args[1],args[2],args[3]
+        output_address_type,output_location = args[4],args[5]
+        self.set([output_address_type,output_location,'int',0])
+        self.cpy([address_type_1,location_1,'dir','-2'])
+        self.unt(['dir','-2'])
+        self.cpy([address_type_2,location_2,'dir','-3'])
+        self.unt(['dir','-3'])
+        self.inc([output_address_type,output_location,'int','1'])
+        self.inc(['dir','-3','int','-1'])
+        self.end_unt()
+        self.inc(['dir','-2','int','-1'])
+        self.end_unt()
+
+    def if_not_zero(self,args):
+        args = self.replace_func(args)
+        address_type,location = args[0],args[1]
+        self.cpy([address_type,location,'dir','-2'])
+        self.unt(['dir','-2'])
+        self.set(['dir','-2','int','0'])
+
+    def end_if(self):
+        self.end_unt()
+
+    def if_zero(self,args):
+        args = self.replace_func(args)
+        address_type,location = args[0],args[1]
+        self.set(['dir','-3','int','1'])
+        self.if_not_zero([address_type,location])
+        self.set(['dir','-3','int','0'])
+        self.end_if()
+        self.if_not_zero(['dir','-3'])
+        self.set(['dir','-3','int','0'])
+
+    def if_true(self,args):
+        args = self.replace_func(args)
+        address_type_1,location_1,address_type_2,location_2 = args[0],args[1],args[3],args[4]
+        operator = args[2]
+        if operator == "==":
+            self.sub([address_type_1,location_1,address_type_2,location_2,'dir','-4'])
+            self.sub([address_type_2,location_2,address_type_1,location_1,'dir','-5'])
+            self.add(['dir','-4','dir','-5','dir','-6'])
+            self.if_zero(['dir','-6'])
+        elif operator == "!=":
+            self.sub([address_type_1,location_1,address_type_2,location_2,'dir','-4'])
+            self.sub([address_type_2,location_2,address_type_1,location_1,'dir','-5'])
+            self.add(['dir','-4','dir','-5','dir','-6'])
+            self.if_not_zero(['dir','-6'])
+        elif operator == ">":
+            self.sub([address_type_1,location_1,address_type_2,location_2,'dir','-4'])
+            self.sub([address_type_2,location_2,address_type_1,location_1,'dir','-5'])
+            self.sub(['dir','-4','dir','-5','dir','-6'])
+            self.if_not_zero(['dir','-6'])
+        elif operator == "<":
+            self.sub([address_type_1,location_1,address_type_2,location_2,'dir','-5'])
+            self.sub([address_type_2,location_2,address_type_1,location_1,'dir','-4'])
+            self.sub(['dir','-4','dir','-5','dir','-6'])
+            self.if_not_zero(['dir','-6'])
+        elif operator == ">=":
+            self.sub([address_type_1,location_1,address_type_2,location_2,'dir','-4'])
+            self.sub([address_type_2,location_2,address_type_1,location_1,'dir','-5'])
+            self.sub(['dir','-4','dir','-5','dir','-6'])
+            self.add(['dir','-4','dir','-5','dir','-7'])
+            self.if_zero(['dir','-7'])
+            self.set(['dir','-6','int','1'])
+            self.end_unt()
+            self.if_not_zero(['dir','-6'])
+        elif operator == "<=":
+            self.sub([address_type_1,location_1,address_type_2,location_2,'dir','-5'])
+            self.sub([address_type_2,location_2,address_type_1,location_1,'dir','-4'])
+            self.sub(['dir','-4','dir','-5','dir','-6'])
+            self.add(['dir','-4','dir','-5','dir','-7'])
+            self.if_zero(['dir','-7'])
+            self.set(['dir','-6','int','1'])
+            self.end_unt()
+            self.if_not_zero(['dir','-6'])
+        else:
+            print("Operator",operator,"not valid")
+            sys.exit()
+
+    def if_special(self,args):
+        var_1,operator,var_2 = args[0],args[1],args[2]
+        address_type_1 = 'dir'
+        location_1 = '-8'
+        address_type_2 = 'dir'
+        location_2 = '-9'
+        if self.get_type(var_1) == 'var':
+            address_type_1 = 'dir'
+            location_1 = self.replace_func([var_1])[0]
+        elif self.get_type(var_1) == 'str':
+            self.set(['dir','-8','str',var_1[1:-1]])
+        else:
+            self.set(['dir','-8','int',var_1])
+
+        if self.get_type(var_2) == 'var':
+            address_type_2 = 'dir'
+            location_2 = self.replace_func([var_2])[0]
+        elif self.get_type(var_2) == 'str':
+            self.set(['dir','-9','str',var_2[1:-1]])
+        else:
+            self.set(['dir','-9','int',var_2])
+        self.if_true([address_type_1,location_1,operator,address_type_2,location_2])
+
+    def asg(self,args):
+        #-11 == temp
+        #-12 == _list_index
+        #-13 == temp
+        #-14 == input_var
+        var_1,value = str(args[0]),str(args[2])
+        print(value)
+        output_type = 'dir'
+        output_var = var_1
+        input_type = 'dir'
+        input_var = '-14'
+        if self.get_type(var_1.split('[')[0]) == "list":
+            if len(var_1.split('[')) == 2:
+                var_1_index = var_1.split('[')[1][:-1]
+                var_1 = var_1.split('[')[0]
+                if var_1_index in self.variables:
+                    self.cpy(['dir',self.variable_addresses[self.variables.index(var_1_index)],'dir','-11'])
+                else:
+                    self.set(['dir','-11','int',var_1_index])
+                self.add(['dir',self.variable_addresses[self.variables.index(var_1)],'dir','-11','dir','-12'])
+                self.inc(['dir','-12','int','1'])
+                output_type = '!dir'
+                output_var = '-12'
+            else:
+                output_var = self.replace_func([var_1])[0]
+        if self.get_type(value.split('[')[0]) == 'var':
+            self.cpy(['dir',self.replace_func([value])[0],'dir','-14'])
+        elif self.get_type(value.split('[')[0]) == 'math':
+            #ADD PARSER FOR MATH EXPRESSIONS
+            pass
+        elif self.get_type(value.split('[')[0]) == 'str':
+            value_ = value[1:-1]
+            self.set(['dir','-14','str',value_])
+        elif self.get_type(value.split('[')[0]) == 'list':
+            if len(value.split('[')) == 2:
+                value_index = value.split('[')[1][:-1]
+                value = value.split('[')[0]
+                if value_index in self.variables:
+                    self.cpy(['dir',self.variable_addresses[self.variables.index(value_index)],'dir','-11'])
+                else:
+                    self.set(['dir','-11','int',value_index])
+                self.add(['dir',self.variable_addresses[self.variables.index(value)],'dir','-11','dir','-13'])
+                self.inc(['dir','-13','int','1'])
+                self.cpy(['!dir','-13','dir','-14'])
+            else:
+                self.cpy(['dir',self.replace_func([value])[0],'dir','-14'])
+        elif self.get_type(value.split('[')[0]) == 'list_':
+            list_ = value.split('[')[1]
+            list_ = list_[:-1].split(",")
+            print("LIST",var_1.split('[')[0])
+            for idx,h in enumerate(list_):
+                self.asg([var_1.split('[')[0]+'[' + str(idx) + ']','=',h])
+            return
+        else:
+            self.set(['dir','-14','int',value])
+        self.cpy([input_type,input_var,output_type,output_var])
+
+    def list(self,args):
+        #-10 == _list_start
+        name,length = args[0],args[1]
+        self.cpy(['dir','-10','dir',name])
+        self.set(['!dir','-10','int',length])
+        self.inc(['dir','-10','int',length])
+        self.inc(['dir','-10','int','1'])
+
+    def get_type(self,variable):
+        if variable in self.ints:
+            return "var"
+        elif variable in self.lists:
+            return "list"
+        elif variable == '':
+            return "list_"
+        elif variable[0] == '"' and len(variable) == 3:
+            return "str"
+        elif variable[0] == '"' and len(variable) > 3:
+            return "string"
+        else:
+            return None
+
     def compile_code (self,code):
+        self.set(['dir','-10','int','0'])
         local_code = code
         for i in local_code:
             no_args = 0
@@ -413,13 +662,16 @@ class compiler:
                     no_args = e[1]
                     func = e[0]
                     break
-            func_to_call = getattr(self,func)
-            if not no_args == 0:
-                func_to_call(i[-no_args:])
+            if func == "if":
+                self.if_special(i[-no_args:])
             else:
-                func_to_call()
+                func_to_call = getattr(self,func)
+                if not no_args == 0:
+                    func_to_call(i[-no_args:])
+                else:
+                    func_to_call()
 
-editor = False
+editor = True
 
 if __name__ == "__main__":
     args = sys.argv[:]
@@ -456,7 +708,7 @@ if __name__ == "__main__":
             print("Parsing...")
             file = parse(file,possible_commands,is_file = True)
             print("Initializing BF Compiler")
-            compiler = compiler(possible_commands,file.hidden_memory)
+            compiler = compiler(possible_commands,file)
             print("Compiling to BF")
             compiler.compile_code(file.parsed)
             print("Compiled to BF")
@@ -494,7 +746,8 @@ if __name__ == "__main__":
         file = 'test.hl'
 
         file = parse(file,possible_commands)
-        compiler = compiler(possible_commands,file.hidden_memory)
+        compiler = compiler(possible_commands,file)
+        print(file.parsed)
         compiler.compile_code(file.parsed)
 
         optimize = True
