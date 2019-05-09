@@ -1,0 +1,5 @@
+fnc sin g {
+
+return g
+
+}

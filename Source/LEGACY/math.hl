@@ -1,0 +1,12 @@
+fnc test a {
+
+return a
+
+}
+
+fnc yeet {
+
+var yeet
+yeet = "y"
+
+}

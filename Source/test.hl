@@ -1,8 +1,66 @@
-var a
-var b
-var c
+fnc len a {
+return a[-1]
+}
 
-set dir a int 1
-if_not_zero dir a
-out dir a int
+var counter
+var pointer
+list bf 200
+bf = ">++++++++[<+++++++++>-]<.>++++[<+++++++>-]<+.+++++++..+++.>>++++++[<+++++++>-]<++.------------.>++++++[<+++++++++>-]<+.<.+++.------.--------.>>>++++[<++++++++>-]<+."
+list memory 30
+var current_instruction
+
+counter = 0
+
+while counter <= len bf
+
+current_instruction = bf[counter]
+
+if current_instruction == "+"
+memory[pointer] = memory[pointer] + 1
 end_if
+
+if current_instruction == "-"
+memory[pointer] = memory[pointer] - 1
+end_if
+
+if current_instruction == "."
+var temp
+temp = memory[pointer]
+out dir temp str
+end_if
+
+if current_instruction == ">"
+pointer = pointer + 1
+end_if
+
+if current_instruction == "<"
+pointer = pointer - 1
+end_if
+
+if current_instruction == "["
+if memory[pointer] == 0
+
+while bf[counter] != "]"
+counter = counter + 1
+end_while
+
+end_if
+end_if
+
+if current_instruction == "]"
+if memory[pointer] != 0
+
+while bf[counter] != "["
+counter = counter - 1
+end_while
+counter = counter - 1
+
+end_if
+end_if
+
+counter = counter + 1
+
+end_while
+
+new_line
+print memory
