@@ -120,9 +120,19 @@ class parser: #Parses Humzlanguage to a format readable by compiler
         output = []
         for command in raw:
             temp = []
-            if len(command) > 1:
+            if len(command) > 2:
                 if command[1] == "=":
                     temp = ["asg"] + command
+                elif command[2] == "=" and command[0] == "var":
+                    output.append(["var",command[1]])
+                    temp = ["asg"] + command[1:]
+                elif command[0] == "list" and command[2] == "=":
+                    if command[3][0] == '"':
+                        length = len(command[3])-2
+                    elif command[3][0] == "[":
+                        length = len(command[3][1:-1].split(","))
+                    output.append(["list",command[1],str(length)])
+                    temp = ["asg"] + command[1:]
                 else:
                     temp = command
             else:
@@ -223,7 +233,7 @@ class parser: #Parses Humzlanguage to a format readable by compiler
                         _func = self.functions[command[x]]
                         _commands = _func.func
                         _args = _func.args
-                        new_args = command[x+1:x+len(args)+1]
+                        new_args = command[x+1:x+len(_args)+1]
                         new_commands = []
                         for line in _commands:
                             for word in line:
@@ -694,8 +704,9 @@ class compiler:
                 self.set(['dir','_print_temp_3','str','"' + i + '"'])
                 self.out(['dir','_print_temp_3','str'])
         elif value[0] == "[":
-            self.asg(['_print_list','=',value])
-            self.print_(['_print_list'])
+            for i in value:
+                self.set(['dir','_print_temp_3','str','"' + i + '"'])
+                self.out(['dir','_print_temp_3','str'])
         else:
             self.asg(['_print_temp_3','=',value])
             self.out(['dir','_print_temp_3','int'])
@@ -831,16 +842,16 @@ editor = False
 
 if __name__ == "__main__":
     args = sys.argv[:]
-    if not len(args) == 1:
+    if not len(args) == 1 or editor:
         parser = parser(possible_commands)
         if editor:
             compiler = compiler(parser,'test.hl')
             compiler_bf_exe(compiler.bf_out,"test.exe")
         else:
-            try:
-                compiler = compiler(parser,args[-1])
-            except:
-                throw("file " + args[-1] + " doesn't exist")
+            #try:
+            compiler = compiler(parser,args[-1])
+            #except:
+                #throw("file " + args[-1] + " doesn't exist")
         memory = False
         if "-show_memory" in args:
             memory = True
@@ -849,7 +860,6 @@ if __name__ == "__main__":
         else:
             compiler_bf_exe(compiler.bf_out,args[-1].split(".")[0] + ".exe")
     else:
-        parser = parser(possible_commands)
         program = []
         print("====================================================")
         print("HUMZLANGUAGE SHELL")
@@ -857,8 +867,12 @@ if __name__ == "__main__":
         print("")
         new_input = []
         whole_program = []
+        new_input_raw = ""
         while True:
             new_input_raw = input(">>>")
+            if new_input_raw == "":
+                while new_input_raw == "":
+                    new_input_raw = input(">>>")
             if new_input_raw == "exit":
                 break
             new_input.append(new_input_raw)
@@ -885,7 +899,8 @@ if __name__ == "__main__":
             try:
                 old_program = whole_program
                 whole_program = whole_program + new_input
-                compile = compiler(parser,whole_program,is_file=False)
+                parse = parser(possible_commands)
+                compile = compiler(parse,whole_program,is_file=False)
                 BF.run(BF.optimize_brain(compile.bf_out),False)
                 to_remove = []
                 has_print = False
@@ -899,5 +914,6 @@ if __name__ == "__main__":
                 if has_print:
                     print("")
             except:
+                print("ERROR")
                 whole_program = old_program
             new_input = []
