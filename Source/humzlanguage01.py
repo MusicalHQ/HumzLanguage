@@ -291,9 +291,9 @@ class parser: #Parses Humzlanguage to a format readable by compiler
         return parsed
 
 class compiler:
-    def __init__(self,parser,file):
+    def __init__(self,parser,file,is_file=True):
         global temp_variables
-        self.parsed,self.variables,self.lists,self.raw,self.functions = parser.get_parsed(file)
+        self.parsed,self.variables,self.lists,self.raw,self.functions = parser.get_parsed(file,is_file)
         self.variables = self.variables + temp_variables
         self.strings = []
         self.addresses = self.get_memory_locations()
@@ -827,20 +827,77 @@ def throw(error):
     print("================")
     sys.exit()
 
-editor = True
+editor = False
 
 if __name__ == "__main__":
     args = sys.argv[:]
-    parser = parser(possible_commands)
-    if editor:
-        compiler = compiler(parser,'test.hl')
-        compiler_bf_exe(compiler.bf_out,"test.exe")
+    if not len(args) == 1:
+        parser = parser(possible_commands)
+        if editor:
+            compiler = compiler(parser,'test.hl')
+            compiler_bf_exe(compiler.bf_out,"test.exe")
+        else:
+            try:
+                compiler = compiler(parser,args[-1])
+            except:
+                throw("file " + args[-1] + " doesn't exist")
+        memory = False
+        if "-show_memory" in args:
+            memory = True
+        if not "-compile" in args:
+            BF.run(BF.optimize_brain(compiler.bf_out),memory)
+        else:
+            compiler_bf_exe(compiler.bf_out,args[-1].split(".")[0] + ".exe")
     else:
-        compiler = compiler(parser,args[-1])
-    memory = False
-    if "-show_memory" in args:
-        memory = True
-    if not "-compile" in args:
-        BF.run(BF.optimize_brain(compiler.bf_out),memory)
-    else:
-        compiler_bf_exe(compiler.bf_out,args[-1].split(".")[0] + ".exe")
+        parser = parser(possible_commands)
+        program = []
+        print("====================================================")
+        print("HUMZLANGUAGE SHELL")
+        print("====================================================")
+        print("")
+        new_input = []
+        whole_program = []
+        while True:
+            new_input_raw = input(">>>")
+            if new_input_raw == "exit":
+                break
+            new_input.append(new_input_raw)
+            if new_input_raw.split()[0] in ["if","if_zero","if_not_zero"]:
+                new_input_raw_1 = ""
+                while not new_input_raw_1 == "end_if":
+                    new_input_raw_1 = input("...")
+                    new_input.append(new_input_raw_1)
+            if new_input_raw.split()[0] == "while":
+                new_input_raw_1 = ""
+                while not new_input_raw_1 == "end_while":
+                    new_input_raw_1 = input("...")
+                    new_input.append(new_input_raw_1)
+            if new_input_raw.split()[0] == "unt":
+                new_input_raw_1 = ""
+                while not new_input_raw_1 == "end_unt":
+                    new_input_raw_1 = input("...")
+                    new_input.append(new_input_raw_1)
+            if new_input_raw.split()[0] == "fnc":
+                new_input_raw_1 = ""
+                while not new_input_raw_1 == "}":
+                    new_input_raw_1 = input("...")
+                    new_input.append(new_input_raw_1)
+            try:
+                old_program = whole_program
+                whole_program = whole_program + new_input
+                compile = compiler(parser,whole_program,is_file=False)
+                BF.run(BF.optimize_brain(compile.bf_out),False)
+                to_remove = []
+                has_print = False
+                for command in whole_program:
+                    if len(command.split()) > 1:
+                        if command.split()[0] == "print" or command.split()[0] == "out":
+                            to_remove.append(command)
+                            has_print = True
+                for command in to_remove:
+                    whole_program.remove(command)
+                if has_print:
+                    print("")
+            except:
+                whole_program = old_program
+            new_input = []
