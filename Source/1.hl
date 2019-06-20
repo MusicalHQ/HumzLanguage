@@ -1,0 +1,46 @@
+fnc sqrt a {
+
+var _sqrt = 1
+while a - _sqrt * _sqrt != 0
+_sqrt = _sqrt + 1
+end_while
+if _sqrt * _sqrt == a
+_sqrt = _sqrt + 1
+end_if
+_sqrt = _sqrt - 1
+return _sqrt
+
+}
+
+fnc len a {
+
+return a[-1]
+
+}
+
+fnc reverse a {
+
+var _reverse_swap = 0
+var _reverse_swap_1
+var _reverse_counter = a[-1]
+
+while _reverse_counter != a[-1] / 2
+var _reverse_index = a[-1] - _reverse_counter
+_reverse_counter = _reverse_counter - 1
+
+_reverse_swap = a[_reverse_counter]
+_reverse_swap_1 = a[_reverse_index]
+a[_reverse_counter] = _reverse_swap_1
+a[_reverse_index] = _reverse_swap
+
+end_while
+
+}
+
+fnc yeet a {
+
+return sqrt a
+
+}
+
+print yeet 10

@@ -34,7 +34,7 @@ possible_commands["return"] = ["return_",2]
 possible_commands["#"] = ["nothing",1]
 possible_commands["read"] = ["read_special",1]
 
-editor = False
+editor = True
 
 class func: #name,args,func
     def __init__(self,name,args,func):
@@ -66,8 +66,10 @@ class parser: #Parses Humzlanguage to a format readable by compiler
     def __init__(self,possible_commands,recursion_limit = 1000,import_limit = 100):
         global editor
         self.possible_commands,self.recursion_limit,self.import_limit = possible_commands,recursion_limit,import_limit
+        self.return_number = 0
 
     def get_parsed(self,input,is_file=True):
+        self.whiles = 0
         self.raw = self.read(input,is_file)
         self.raw = self.check_assigns(self.raw)
         self.raw,functions = self.check_imports(self.raw)
@@ -76,10 +78,33 @@ class parser: #Parses Humzlanguage to a format readable by compiler
         self.functions.update(functions)
         #self.functions = self.functions + functions
         self.fix_functions()
+        self.raw = self.check_whiles(self.raw)
         self.raw = self.expand_functions(self.raw)
         self.raw,self.variables,self.lists = self.get_variables(self.raw)
         self.parsed = self.parse(self.raw)
+        #print(self.raw)
         return self.parsed,self.variables,self.lists,self.raw,self.functions
+
+    def check_whiles(self,raw):
+        new_raw = []
+        new_commands = []
+        for idx_,command in enumerate(raw):
+            if command[0] == "while":
+                for idx,sub_command in enumerate(command[1:]):
+                    if sub_command in self.functions:
+                        new_commands.append(["_whiles"+str(self.whiles),"="] + command[idx+1:idx+len(self.functions[sub_command].args)+2][:])
+                        new_command = command[:]
+                        new_command[idx+1:idx+len(self.functions[sub_command].args)+2] = ["_whiles"+str(self.whiles)]
+                        new_raw.append(["var","_whiles"+str(self.whiles)])
+                        new_raw.append(new_command)
+                        self.whiles += 1
+            elif command[0] == "end_while":
+                new_raw.append(new_commands.pop(-1))
+                new_raw.append(command)
+            else:
+                new_raw.append(command)
+        new_raw = self.check_assigns(new_raw)
+        return new_raw
 
     def check_imports(self,raw):
         output = []
@@ -195,9 +220,16 @@ class parser: #Parses Humzlanguage to a format readable by compiler
             for command in functions[name].func:
                 if command[0] in functions:
                     has_functions = True
+                    break
+                if command[0] == "print" or command[0] == "asg" or command[0] == "if" or command[0] == "while" or command[0] == "return":
+                    for c in command:
+                        #print(c,functions,c in functions)
+                        if c in functions:
+                            has_functions = True
+                            break
         return has_functions
 
-    def expand_functions(self,raw,return_number=0):
+    def expand_functions(self,raw):
         output = []
         for command in raw:
             if command[0] in self.functions:
@@ -220,11 +252,11 @@ class parser: #Parses Humzlanguage to a format readable by compiler
                             new_args.append(new_word)
                 for line in _commands:
                     new_commands.append(replace_bulk(line,_args,new_args))
-                output.append(["var","_return" + str(return_number)])
-                return_number += 1
+                output.append(["var","_return" + str(self.return_number)])
+                self.return_number += 1
                             #if word.split
                 output = output + new_commands
-            elif command[0] == "asg" or command[0] == "print" or command[0] == "if" or command[0] == "while":
+            elif command[0] == "asg" or command[0] == "print" or command[0] == "if" or command[0] == "while" or command[0] == "return":
                 x = 0
                 has_func = False
                 while x < len(command):
@@ -250,24 +282,23 @@ class parser: #Parses Humzlanguage to a format readable by compiler
                                         _args.append(word)
                                     if not new_word in new_args:
                                         new_args.append(new_word)
-
                         for line in _commands:
                             if not len(_args) == 0:
                                 new_commands.append(replace_bulk(line,_args,new_args))
                         output = output + new_commands
                         add = 1
-                        if command[0] == "if" or command[0] == "while":
-                            add = 0
-                        command[x:x+len(_args)+add] = ["_return" + str(return_number)]
-                        output.append(["var","_return" + str(return_number)])
-                        return_number += 1
+                        command[x:x+len(_args)+add] = ["_return" + str(self.return_number)]
+                        output.append(["var","_return" + str(self.return_number)])
+
+                        self.return_number += 1
                         output.append(command)
-                        output = self.expand_functions(output,return_number)
+                        output = self.expand_functions(output)
                     x += 1
                 if not has_func:
                     output.append(command)
             else:
                 output.append(command)
+        #print(output)
         return output
 
     def get_variables(self,raw):
