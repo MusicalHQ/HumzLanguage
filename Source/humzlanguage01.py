@@ -33,6 +33,7 @@ possible_commands["new_line"] = ["new_line",2]
 possible_commands["return"] = ["return_",2]
 possible_commands["#"] = ["nothing",1]
 possible_commands["read"] = ["read_special",1]
+possible_commands["pass"] = ["nothing",1]
 
 editor = True
 
@@ -86,10 +87,13 @@ class parser: #Parses Humzlanguage to a format readable by compiler
         return self.parsed,self.variables,self.lists,self.raw,self.functions
 
     def check_whiles(self,raw):
+        #### SUPER BROKEN
+        #print(raw)
         new_raw = []
         new_commands = []
         for idx_,command in enumerate(raw):
             if command[0] == "while":
+                has_func = False
                 for idx,sub_command in enumerate(command[1:]):
                     if sub_command in self.functions:
                         new_commands.append(["_whiles"+str(self.whiles),"="] + command[idx+1:idx+len(self.functions[sub_command].args)+2][:])
@@ -97,12 +101,19 @@ class parser: #Parses Humzlanguage to a format readable by compiler
                         new_command[idx+1:idx+len(self.functions[sub_command].args)+2] = ["_whiles"+str(self.whiles)]
                         new_raw.append(["var","_whiles"+str(self.whiles)])
                         new_raw.append(new_command)
+                        has_func = True
                         self.whiles += 1
+                if not has_func:
+                    new_command = command[:]
+                    new_raw.append(new_command)
+                    new_commands.append(["pass"])
+                #print(new_commands)
             elif command[0] == "end_while":
                 new_raw.append(new_commands.pop(-1))
                 new_raw.append(command)
             else:
                 new_raw.append(command)
+        #print(new_raw)
         new_raw = self.check_assigns(new_raw)
         return new_raw
 
